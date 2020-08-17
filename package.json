@@ -1,0 +1,14 @@
+{
+  "name": "com.nekometer.esnya.esnya-unity-tools",
+  "version": "1.0.0",
+  "displayName": "EsnyaUnityTools",
+  "unity": "2018.4",
+  "description": "",
+  "keywords": [
+    "VRChat",
+    "Unity"
+  ],
+  "author": "esnya",
+  "license": "MIT",
+  "private": true
+}
