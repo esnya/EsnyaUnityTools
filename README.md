@@ -1,15 +1,15 @@
 # EsnyaUnityTools
-Common utilities for Unity
+Common utilities for Unity.
 
 ## Usage
-Open `EsnyaTools` in the menu.
+Open the menu `EsnyaTools`.
 
-## Features
+## Function.
 ### Animation Replacer
-指定した AnimatorController 内の同じ Animation, BlendTree を一括で置き換えるツール。
+This tool replaces the same Animation and BlendTree in a given AnimatorController.
 
 ## Asset Renamer
-ディレクトリ内のアセットファイルをパターン指定でリネームするツール。
+A tool to rename asset files by pattern in a directory.
 
-### Crunch All
-プロジェクト内の全ての Texture2D の CrunchCompression を有効化するツール。押したら止まらないし戻らないので注意。
+### Crunch All.
+This tool enables CrunchCompression for all Texture2D in a project. Note that it doesn't stop or return when pressed.
