@@ -1,14 +1,13 @@
 #if UNITY_EDITOR
 namespace EsnyaFactory
 {
-  using System.Threading.Tasks;
   using System.Collections.Generic;
   using System.Linq;
   using System.Text.RegularExpressions;
   using UnityEngine;
   using UnityEditor;
 
-  class EEU {
+  public class EEU {
     static public T ObjectField<T>(string label, T value, bool allowSceneObjects) where T : Object
     {
       return EditorGUILayout.ObjectField(label, value, typeof(T), allowSceneObjects) as T;
