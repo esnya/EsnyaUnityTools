@@ -11,5 +11,8 @@ This tool replaces the same Animation and BlendTree in a given AnimatorControlle
 ## Asset Renamer
 A tool to rename asset files by pattern in a directory.
 
-### Crunch All.
+### Crunch All
 This tool enables CrunchCompression for all Texture2D in a project. Note that it doesn't stop or return when pressed.
+
+### BlendTree Creator
+Create new asset of BlendTree.
