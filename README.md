@@ -4,7 +4,7 @@ Common utilities for Unity.
 ## Usage
 Open the menu `EsnyaTools`.
 
-## Function.
+## Features
 ### Animation Replacer
 This tool replaces the same Animation or BlendTree in a given AnimatorController.
 
@@ -25,6 +25,13 @@ Create new asset of BlendTree.
 
 新しいBlendTreeをAssetとして作成する。
 
+### Remove Duplicate Names
+A tool for numbering objects with the same name that have the same parent.
+ VRCSDK has a similar function, but for when there are too many objects and they get stuck.
+
+同じ親を持つ同名オブジェクトに連番をつけるツール。VRCSDKも同様の機能を持っているが、オブジェクトが多すぎて固まったとき用。
+
+## Features for VRC Any Versions
 ### Fix VRCCam
 A tool to modify the VRCCam Prehab, which has poor parameters by default.
 It allows you to add a PostProcessingLayer, set Background Color, and use physical camera properties.
@@ -32,8 +39,9 @@ It allows you to add a PostProcessingLayer, set Background Color, and use physic
 デフォルトではなんとも言えないVRCCamのPrefabを変更するツール。
 PostProcessingLayerを追加したり、Background Colorを設定したり、物理カメラパラメータ設定を使ったりできる。
 
-### Remove Duplicate Names
-A tool for numbering objects with the same name that have the same parent.
- VRCSDK has a similar function, but for when there are too many objects and they get stuck.
 
-同じ親を持つ同名オブジェクトに連番をつけるツール。VRCSDKも同様の機能を持っているが、オブジェクトが多すぎて固まったとき用。
+## Features for VRC AVATAR SDK 3.0
+### View Position Visualizer
+A tool to display Gizmo in order to adjust the ViewPosition to the correct position, and to adjust the animation while moving the Upright.
+
+ViewPosition を正しい位置に合わせるための Gizmo を表示するツール。Upright を動かしながらアニメーション調整するためのもの。
