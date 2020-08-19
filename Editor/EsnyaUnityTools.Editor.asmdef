@@ -2,7 +2,8 @@
     "name": "EsnyaUnityTools.Editor",
     "references": [
         "Unity.Postprocessing.Runtime",
-        "Unity.Postprocessing.Editor"
+        "Unity.Postprocessing.Editor",
+        "EsbyaUnityTools.Scripts"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
