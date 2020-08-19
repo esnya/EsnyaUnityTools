@@ -1,6 +1,9 @@
 {
     "name": "EsnyaUnityTools.Editor",
-    "references": [],
+    "references": [
+        "Unity.Postprocessing.Runtime",
+        "Unity.Postprocessing.Editor"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"

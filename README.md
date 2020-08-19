@@ -16,3 +16,5 @@ This tool enables CrunchCompression for all Texture2D in a project. Note that it
 
 ### BlendTree Creator
 Create new asset of BlendTree.
+
+### VRCCam Pathcer
