@@ -39,7 +39,6 @@ It allows you to add a PostProcessingLayer, set Background Color, and use physic
 デフォルトではなんとも言えないVRCCamのPrefabを変更するツール。
 PostProcessingLayerを追加したり、Background Colorを設定したり、物理カメラパラメータ設定を使ったりできる。
 
-
 ## Features for VRC AVATAR SDK 3.0
 ### View Position Visualizer
 A tool to display Gizmo in order to adjust the ViewPosition to the correct position, and to adjust the animation while moving the Upright.
