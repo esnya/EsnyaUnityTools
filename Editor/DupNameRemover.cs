@@ -6,7 +6,7 @@ namespace EsnyaFactory {
 
   public class DupNameRemover : EditorWindow {
 
-    [MenuItem("EsnyaTools/Remove Duplicated Names")]
+    [MenuItem("EsnyaTools/Remove Duplicate Names")]
     private static void ShowWindow() {
       var window = GetWindow<DupNameRemover>();
       window.Show();

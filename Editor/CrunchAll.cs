@@ -6,8 +6,8 @@ namespace EsnyaFactory {
 
   class CrunchAll: EditorWindow {
 
-    [MenuItem("EsnyaTools/CrunchAll")]
-    [MenuItem("Assets/EsnyaTools/CrunchAll")]
+    [MenuItem("EsnyaTools/Crunch All")]
+    [MenuItem("Assets/EsnyaTools/Crunch All")]
     private static void Init()
     {
       var window = EditorWindow.GetWindow<CrunchAll>();

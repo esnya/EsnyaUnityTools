@@ -6,7 +6,7 @@ namespace EsnyaFactory {
 
   public class VRCCamPatcher : EditorWindow {
 
-    [MenuItem("EsnyaTools/Patch VRCCam")]
+    [MenuItem("EsnyaTools/Fix VRCCam")]
     private static void ShowWindow() {
       var window = GetWindow<VRCCamPatcher>();
       window.Show();
