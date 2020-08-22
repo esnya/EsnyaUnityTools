@@ -15,37 +15,50 @@ namespace EsnyaFactory {
     }
 
     private int textureCount;
-    private List<TextureImporter> importers;
+    private List<TextureImporter> toCrunch;
+    private List<TextureImporter> toStreaming;
+    private bool crunch =  true;
+    private bool streaming = true;
 
     private void OnGUI()
     {
       titleContent = new GUIContent("Crunch All");
       ListImporters();
 
-      EditorGUILayout.LabelField($"{textureCount - importers.Count}/{textureCount} textures are crunched.");
+      EditorGUILayout.LabelField($"{toCrunch.Count}/{textureCount} textures are not crunch comporessed.");
+      EditorGUILayout.LabelField($"{toStreaming.Count}/{textureCount} texture's streaming mipmaps are disabled.");
 
-      if (GUILayout.Button("Crunch All")) {
-        SetCrunchAll();
+      crunch = EditorGUILayout.Toggle("Crunch Comporess", crunch);
+      streaming = EditorGUILayout.Toggle("Streaming Mipmaps", streaming);
+
+      EditorGUI.BeginDisabledGroup(!crunch && !streaming);
+      if (GUILayout.Button("Execute")) {
+        Execute();
       }
+      EditorGUI.EndDisabledGroup();
     }
 
     private void ListImporters()
     {
       var textures = AssetDatabase.FindAssets("t:Texture2D", new []{"Assets"});
       textureCount = textures.Count();
-      importers = textures
+      var importers = textures
         .Select(AssetDatabase.GUIDToAssetPath)
         .Select(path => TextureImporter.GetAtPath(path) as TextureImporter)
-        .Where(importer => importer?.crunchedCompression == false)
         .ToList();
+      toCrunch = importers.Where(importer => importer?.crunchedCompression == false).ToList();
+      toStreaming = importers.Where(importer => importer?.streamingMipmaps == false).ToList();
     }
 
-    private void SetCrunchAll()
+    private void Execute()
     {
-      importers.ForEach(importer => {
-        importer.crunchedCompression = true;
-        importer.SaveAndReimport();
+      toCrunch.Concat(toStreaming).Distinct().ToList().ForEach(importer => {
+        if (crunch) importer.crunchedCompression = true;
+        if (streaming) importer.streamingMipmaps = true;
+        EditorUtility.SetDirty(importer);
       });
+      AssetDatabase.SaveAssets();
+      AssetDatabase.Refresh();
     }
   }
 }
