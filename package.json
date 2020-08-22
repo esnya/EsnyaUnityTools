@@ -10,5 +10,8 @@
   ],
   "author": "esnya",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "scripts": {
+    "version": "cross-var npx gitmoji-changelog $npm_package_version && git add CHANGELOG.md"
+  }
 }
