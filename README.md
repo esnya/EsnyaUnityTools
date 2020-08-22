@@ -1,6 +1,11 @@
 # EsnyaUnityTools
 Common utilities for Unity.
 
+## Requirements
+* Unity 2018.4.20f1
+* [PostProcessing](https://docs.unity3d.com/Packages/com.unity.postprocessing@2.1/manual/Installation.html) 2.3.0
+* (Optional) VRCSDK3 Avatars
+
 ## Usage
 Open the menu `EsnyaTools`.
 
