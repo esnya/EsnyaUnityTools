@@ -1,5 +1,19 @@
 # Changelog
 
+<a name="1.1.0"></a>
+## 1.1.0 (2020-08-27)
+
+### Added
+
+- ✨ Auto Texture [4e711b6]
+- ➕ Add dependency [caa872b]
+
+### Miscellaneous
+
+- 📝 Update README.md [fa89c86]
+- 📝 Fix changelog [9c32ea9]
+
+
 <a name="1.0.0"></a>
 ## 1.0.0 (2020-08-22)
 
