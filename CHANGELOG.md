@@ -1,5 +1,17 @@
 # Changelog
 
+<a name="1.2.0"></a>
+## 1.2.0 (2020-09-02)
+
+### Added
+
+- ✨ ExEquipments [9b521c9]
+
+### Changed
+
+- 💄 Improve the UI of ExEquipments [ca3fffb]
+
+
 <a name="1.1.0"></a>
 ## 1.1.0 (2020-08-27)
 
