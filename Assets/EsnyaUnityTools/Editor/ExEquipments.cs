@@ -9,10 +9,10 @@ namespace EsnyaFactory {
   using VRC.SDK3.Avatars.Components;
   using VRC.SDK3.Avatars.ScriptableObjects;
 
-  public class ExEquipmentsa : EditorWindow {
+  public class ExEquipments : EditorWindow {
     [MenuItem("EsnyaTools/ExEquipments")]
     public static void Open() {
-      var w = GetWindow<ExEquipmentsa>();
+      var w = GetWindow<ExEquipments>();
       w.titleContent = new GUIContent("ExEquipments");
       w.Show();
     }
@@ -44,7 +44,7 @@ namespace EsnyaFactory {
     }
 
     private void OnGUI() {
-        scroll = EEU.Scroll(scroll, () => {
+      scroll = EEU.Scroll(scroll, () => {
         EditorGUILayout.Space();
 
         item = EEU.ObjectField<GameObject>("Target Item", item, true);
@@ -56,7 +56,6 @@ namespace EsnyaFactory {
           expressionParameters = EEU.ObjectField<VRCExpressionParameters>("Expression Parameters", expressionParameters, false);
           controller = EEU.ObjectField<AnimatorController>("FX Layer", controller, false);
         });
-
 
         EditorGUILayout.Space();
 
@@ -88,62 +87,8 @@ namespace EsnyaFactory {
       });
     }
 
-    private static T GetOrAddComponent<T>(GameObject gameObject) where T : Behaviour {
-      var component = gameObject.GetComponent<T>();
-      if (component != null) return component;
-      return gameObject.AddComponent<T>();
-    }
-
-    private static GameObject GetOrAddChild(GameObject gameObject, string name) {
-      var child = gameObject.transform.Find(name);
-      if (child != null) return child.gameObject;
-
-      child = new GameObject(name).transform;
-      child.SetParent(gameObject.transform);
-      return child.gameObject;
-    }
-
-    private static AnimatorControllerLayer GetOrAddLayer(AnimatorController controller, string name) {
-      var layer = controller.layers.FirstOrDefault(l => l.name == name);
-      if (layer != null) return layer;
-      layer = new AnimatorControllerLayer();
-      layer.name = name;
-      layer.defaultWeight = 1.0f;
-      layer.stateMachine = new AnimatorStateMachine();
-      AnimatorUtilities.AddLayer(controller, layer);
-      return layer;
-    }
-
-    private static void AddParameterIfNotExists(AnimatorController controller, string name, AnimatorControllerParameterType type) {
-      if (controller.parameters.FirstOrDefault(p => p.name == name) == null) {
-        controller.AddParameter(name, type);
-      }
-    }
-
-    private static string GetHierarchyPath(Transform target, Transform root)
-    {
-      string path = target.gameObject.name;
-      Transform parent = target.parent;
-      while (parent != null && parent != root)
-      {
-        path = parent.name + "/" + path;
-        parent = parent.parent;
-      }
-      return path;
-    }
-
-    private T GetOrCreateAsset<T>(string path, bool scriptable = false) where T : Object, new () {
-      var fullPath = $"{outDir}/{path}";
-      var asset = AssetDatabase.LoadAssetAtPath<T>(fullPath);
-      if (asset != null) return asset;
-
-      asset = scriptable ? ScriptableObject.CreateInstance(typeof(T)) as T : new T();
-      AssetDatabase.CreateAsset(asset, fullPath);
-      return asset;
-    }
-
     private ParentConstraint SetupParentConstraint() {
-      var parentConstraint = GetOrAddComponent<ParentConstraint>(item);
+      var parentConstraint = GameObjectUtility.GetOrAddComponent<ParentConstraint>(item);
       parentConstraint.enabled = true;
       parentConstraint.constraintActive = true;
       parentConstraint.locked = true;
@@ -155,6 +100,11 @@ namespace EsnyaFactory {
       return parentConstraint;
     }
 
+    private T GetOrCreateAsset<T>(string path, bool scriptable = false) where T : Object, new () {
+      var fullPath = $"{outDir}/{path}";
+      return AssetUtility.GetOrCreateAsset<T>(fullPath, scriptable);
+    }
+
     private string GetAnimationAssetPath(Transform target) {
       return $"{item.name}_{target.name.Replace($"{item.name}_", "")}.anim";
     }
@@ -164,22 +114,22 @@ namespace EsnyaFactory {
         var clip = GetOrCreateAsset<AnimationClip>(GetAnimationAssetPath(target));
         clip.ClearCurves();
         Enumerable.Range(0, targets.Count + (drop ? 1 : 0)).ToList().ForEach(j => {
-          clip.SetCurve(GetHierarchyPath(item.transform, avatar.transform), typeof(ParentConstraint), $"m_Sources.Array.data[{j}].weight", new AnimationCurve(new [] {
+          clip.SetCurve(GameObjectUtility.GetHierarchyPath(item.transform, avatar.transform), typeof(ParentConstraint), $"m_Sources.Array.data[{j}].weight", new AnimationCurve(new [] {
             new Keyframe(0, j == i ? 1 : 0),
           }));
         });
+        EditorUtility.SetDirty(clip);
+        AssetDatabase.SaveAssets();
         return clip;
       }).ToList();
     }
 
     private AnimatorControllerLayer SetupLayer(List<AnimationClip> clips) {
-      AddParameterIfNotExists(controller, item.name, AnimatorControllerParameterType.Int);
+      EsnyaFactory.AnimatorUtility.AddParameterIfNotExists(controller, item.name, AnimatorControllerParameterType.Int);
 
-      var layer = GetOrAddLayer(controller, item.name);
+      var layer = EsnyaFactory.AnimatorUtility.GetOrAddLayer(controller, item.name);
       layer.defaultWeight = 1.0f;
       layer.stateMachine.states.ToList().ForEach(state => layer.stateMachine.RemoveState(state.state));
-      EditorUtility.SetDirty(controller);
-
 
       clips.Select((clip, i) => new { clip, i }).ToList().ForEach(a => {
         var state = layer.stateMachine.AddState(a.clip.name, new Vector3(400, 100 * a.i, 0));
@@ -199,33 +149,36 @@ namespace EsnyaFactory {
         transition.hasExitTime = false;
       });
 
+      EditorUtility.SetDirty(controller);
+      AssetDatabase.SaveAssets();
+
       return layer;
     }
 
 
     private void SetupDrop(ParentConstraint parentConstraint, AnimatorControllerLayer layer) {
-        var worldAnchor = GetOrAddChild(avatar.gameObject, "WorldAnchor");
-        var worldConstraint = GetOrAddChild(worldAnchor, "WorldConstraint");
+        var worldAnchor = GameObjectUtility.GetOrAddChild(avatar.gameObject, "WorldAnchor");
+        var worldConstraint = GameObjectUtility.GetOrAddChild(worldAnchor, "WorldConstraint");
 
-        var rotationConstraint = GetOrAddComponent<RotationConstraint>(worldConstraint);
+        var rotationConstraint = GameObjectUtility.GetOrAddComponent<RotationConstraint>(worldConstraint);
         rotationConstraint.enabled = true;
         rotationConstraint.constraintActive = true;
         rotationConstraint.locked = true;
         rotationConstraint.weight = 1.0f;
         rotationConstraint.SetSources(new List<ConstraintSource>() { new ConstraintSource() { sourceTransform = worldAnchor.transform, weight = -0.5f } });
 
-        var positionConstraint = GetOrAddComponent<PositionConstraint>(worldConstraint);
+        var positionConstraint = GameObjectUtility.GetOrAddComponent<PositionConstraint>(worldConstraint);
         positionConstraint.enabled = true;
         positionConstraint.constraintActive = true;
         positionConstraint.locked = true;
         positionConstraint.weight = 0.5f;
         positionConstraint.SetSources(new List<ConstraintSource>() { new ConstraintSource() { sourceTransform = worldAnchor.transform, weight = -1.0f }});
 
-        var dropTarget = GetOrAddChild(worldConstraint, $"{item.name}_Drop");
+        var dropTarget = GameObjectUtility.GetOrAddChild(worldConstraint, $"{item.name}_Drop");
 
         parentConstraint.AddSource(new ConstraintSource() { sourceTransform = dropTarget.transform, weight = 0.0f });
 
-        var dropTargetParentConstraint = GetOrAddComponent<ParentConstraint>(dropTarget);
+        var dropTargetParentConstraint = GameObjectUtility.GetOrAddComponent<ParentConstraint>(dropTarget);
         dropTargetParentConstraint.enabled = false;
         dropTargetParentConstraint.constraintActive = true;
         dropTargetParentConstraint.locked = true;
@@ -234,31 +187,31 @@ namespace EsnyaFactory {
 
         targets.ForEach(target => {
           var clip = GetOrCreateAsset<AnimationClip>(GetAnimationAssetPath(target));
-          clip.SetCurve(GetHierarchyPath(dropTarget.transform, avatar.transform), typeof(ParentConstraint), "m_Enabled", new AnimationCurve(new [] {
+          clip.SetCurve(GameObjectUtility.GetHierarchyPath(dropTarget.transform, avatar.transform), typeof(ParentConstraint), "m_Enabled", new AnimationCurve(new [] {
             new Keyframe(0, 1),
           }));
+          EditorUtility.SetDirty(clip);
         });
 
         var clipPath = $"{item.name}_Drop.anim";
         var dropClip = GetOrCreateAsset<AnimationClip>(clipPath);
         dropClip.ClearCurves();
 
-        dropClip.SetCurve(GetHierarchyPath(dropTarget.transform, avatar.transform), typeof(ParentConstraint), "m_Enabled", new AnimationCurve(new [] {
+        dropClip.SetCurve(GameObjectUtility.GetHierarchyPath(dropTarget.transform, avatar.transform), typeof(ParentConstraint), "m_Enabled", new AnimationCurve(new [] {
           new Keyframe(0, 0),
         }));
-        EditorUtility.SetDirty(dropClip);
-
-        dropClip.SetCurve(GetHierarchyPath(item.transform, avatar.transform), typeof(ParentConstraint), $"m_Sources.Array.data[{dropIndex}].weight", new AnimationCurve(new [] {
+        dropClip.SetCurve(GameObjectUtility.GetHierarchyPath(item.transform, avatar.transform), typeof(ParentConstraint), $"m_Sources.Array.data[{dropIndex}].weight", new AnimationCurve(new [] {
           new Keyframe(0, 1),
         }));
 
         targets.Select((target, i) => i).ToList().ForEach(i => {
-          dropClip.SetCurve(GetHierarchyPath(item.transform, avatar.transform), typeof(ParentConstraint), $"m_Sources.Array.data[{i}].weight", new AnimationCurve(new [] {
+          dropClip.SetCurve(GameObjectUtility.GetHierarchyPath(item.transform, avatar.transform), typeof(ParentConstraint), $"m_Sources.Array.data[{i}].weight", new AnimationCurve(new [] {
             new Keyframe(0, 0),
           }));
         });
 
         EditorUtility.SetDirty(dropClip);
+        AssetDatabase.SaveAssets();
 
         var state = layer.stateMachine.AddState("Drop", new Vector3(400, 100 * targets.Count, 0));
         state.motion = dropClip;
@@ -273,6 +226,7 @@ namespace EsnyaFactory {
             threshold = dropIndex,
           },
         };
+
         transition.duration = 0.5f / 60;
         transition.hasExitTime = false;
     }
@@ -284,6 +238,8 @@ namespace EsnyaFactory {
         name = item.name,
         valueType = VRCExpressionParameters.ValueType.Int,
       };
+      EditorUtility.SetDirty(expressionParameters);
+      AssetDatabase.SaveAssets();
     }
 
     private void SetupMenu() {
@@ -307,21 +263,41 @@ namespace EsnyaFactory {
         },
         value = targets.Count,
       }) : controls).ToList();
+
+      EditorUtility.SetDirty(menu);
+      AssetDatabase.SaveAssets();
     }
 
     private void Setup() {
+      uint totalSetps = 7;
+      uint step = 0;
+
+      EditorUtility.DisplayProgressBar("ExEquipments", "Setup in progress", (float)(step++) / totalSetps);
+
+      EditorUtility.DisplayProgressBar("ExEquipments", "ParentConstraint", (float)(step++) / totalSetps);
       var parentConstraint = SetupParentConstraint();
+
+      EditorUtility.DisplayProgressBar("ExEquipments", "Animation clips", (float)(step++) / totalSetps);
       var clips = SetupClips();
+
+      EditorUtility.DisplayProgressBar("ExEquipments", "Animation controller layer", (float)(step++) / totalSetps);
       var layer = SetupLayer(clips);
 
+      EditorUtility.DisplayProgressBar("ExEquipments", "Extra: Drop", (float)(step++) / totalSetps);
       if (drop) {
         SetupDrop(parentConstraint, layer);
       }
 
+
+      EditorUtility.DisplayProgressBar("ExEquipments", "Expression parameters", (float)(step++) / totalSetps);
       SetupParameters();
+
+      EditorUtility.DisplayProgressBar("ExEquipments", "Expressions menu", (float)(step++) / totalSetps);
       SetupMenu();
 
+      EditorUtility.DisplayProgressBar("ExEquipments", "Finalize", (float)(step++) / totalSetps);
       AssetDatabase.Refresh();
+      EditorUtility.ClearProgressBar();
     }
   }
 }
