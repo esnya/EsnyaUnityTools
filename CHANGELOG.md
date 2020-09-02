@@ -1,5 +1,13 @@
 # Changelog
 
+<a name="1.2.1"></a>
+## 1.2.1 (2020-09-02)
+
+### Fixed
+
+- 🐛 Fixed a bug that prevented some changes from being saved to assets [37c57f6]
+
+
 <a name="1.2.0"></a>
 ## 1.2.0 (2020-09-02)
 
