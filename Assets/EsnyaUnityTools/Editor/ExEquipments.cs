@@ -17,13 +17,19 @@ namespace EsnyaFactory {
       w.Show();
     }
 
+    private Vector2 scroll;
     private VRCAvatarDescriptor avatar;
     private VRCExpressionParameters expressionParameters;
     private AnimatorController controller;
     private GameObject item;
     private List<Transform> targets = new List<Transform>(){ null };
     private bool drop = false;
-    private DefaultAsset outDir;
+    private DefaultAsset outDirAsset;
+    private string outDir {
+      get {
+        return outDirAsset != null ? AssetDatabase.GetAssetPath(outDirAsset) : null;
+      }
+    }
 
     private int dropIndex {
       get {
@@ -31,26 +37,55 @@ namespace EsnyaFactory {
       }
     }
 
+    private bool isValid {
+      get {
+        return avatar != null && expressionParameters != null && controller != null && item != null && targets.All(t => t != null) && AssetDatabase.IsValidFolder(outDir);
+      }
+    }
+
     private void OnGUI() {
-      avatar = EEU.ObjectField<VRCAvatarDescriptor>("Avatar", avatar, true);
-      expressionParameters = EEU.ObjectField<VRCExpressionParameters>("Expression Parameters", expressionParameters, false);
-      controller = EEU.ObjectField<AnimatorController>("Controller", controller, false);
+        scroll = EEU.Scroll(scroll, () => {
+        EditorGUILayout.Space();
 
-      item = EEU.ObjectField<GameObject>("Item", item, true);
+        item = EEU.ObjectField<GameObject>("Target Item", item, true);
 
-      targets = targets.Select((target, i) => EEU.ObjectField<Transform>($"Target {i}", target, true)).ToList();
+        EditorGUILayout.Space();
 
-      EEU.Horizontal(() => {
-        EEU.Button("+", () => targets.Add(null));
-        EEU.Button("-", () => targets = targets.Take(targets.Count - 1).ToList());
+        EEU.Box("Avatar Resources", () => {
+          avatar = EEU.ObjectField<VRCAvatarDescriptor>("Avatar", avatar, true);
+          expressionParameters = EEU.ObjectField<VRCExpressionParameters>("Expression Parameters", expressionParameters, false);
+          controller = EEU.ObjectField<AnimatorController>("FX Layer", controller, false);
+        });
+
+
+        EditorGUILayout.Space();
+
+        EEU.Box("Target Transforms", () => {
+          targets = targets.Select((target, i) => EEU.ObjectField<Transform>($"Target {i}", target, true)).ToList();
+          EEU.Horizontal(() => {
+            EEU.Button("+", () => targets.Add(null));
+            EEU.Button("-", () => targets = targets.Take(targets.Count - 1).ToList());
+          });
+        });
+
+        EditorGUILayout.Space();
+
+        EEU.Box("Extra Actions", () => {
+          drop = EditorGUILayout.Toggle("Drop", drop);
+        });
+
+        EditorGUILayout.Space();
+
+        outDirAsset = EEU.AssetDirectoryField("Output Directory", outDirAsset);
+
+        EditorGUILayout.Space();
+
+        EEU.Disabled(!isValid, () => {
+          EEU.Button("Setup", Setup);
+        });
+
+        EditorGUILayout.Space();
       });
-
-      drop = EditorGUILayout.Toggle("Drop", drop);
-
-      outDir = EEU.AssetDirectoryField("Output Directory", outDir);
-
-
-      EEU.Button("Setup", Setup);
     }
 
     private static T GetOrAddComponent<T>(GameObject gameObject) where T : Behaviour {
@@ -71,8 +106,12 @@ namespace EsnyaFactory {
     private static AnimatorControllerLayer GetOrAddLayer(AnimatorController controller, string name) {
       var layer = controller.layers.FirstOrDefault(l => l.name == name);
       if (layer != null) return layer;
-      controller.AddLayer(name);
-      return GetOrAddLayer(controller, name);
+      layer = new AnimatorControllerLayer();
+      layer.name = name;
+      layer.defaultWeight = 1.0f;
+      layer.stateMachine = new AnimatorStateMachine();
+      AnimatorUtilities.AddLayer(controller, layer);
+      return layer;
     }
 
     private static void AddParameterIfNotExists(AnimatorController controller, string name, AnimatorControllerParameterType type) {
@@ -94,7 +133,7 @@ namespace EsnyaFactory {
     }
 
     private T GetOrCreateAsset<T>(string path, bool scriptable = false) where T : Object, new () {
-      var fullPath = $"{AssetDatabase.GetAssetPath(outDir)}/{path}";
+      var fullPath = $"{outDir}/{path}";
       var asset = AssetDatabase.LoadAssetAtPath<T>(fullPath);
       if (asset != null) return asset;
 

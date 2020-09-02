@@ -49,3 +49,8 @@ PostProcessingLayerを追加したり、Background Colorを設定したり、物
 A tool to display Gizmo in order to adjust the ViewPosition to the correct position, and to adjust the animation while moving the Upright.
 
 ViewPosition を正しい位置に合わせるための Gizmo を表示するツール。Upright を動かしながらアニメーション調整するためのもの。
+
+### ExEquipments
+A gimmick generator that uses ExpressionsMenu to equip items, hold them in your hands and pin them to the world. Add the generated menu as a SubMenu and enjoy it now.
+
+ExpressionsMenuを使ってアイテムを装備したり、手に持ったり、ワールドに固定したりするギミックを生成する。出力されたMenuをSubMenuとして追加すればすぐ使える。

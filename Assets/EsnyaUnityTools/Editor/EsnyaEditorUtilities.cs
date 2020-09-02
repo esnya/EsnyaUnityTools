@@ -30,7 +30,7 @@ namespace EsnyaFactory
 
     static public DefaultAsset AssetDirectoryField(string label, DefaultAsset value) {
       var newValue = ObjectField(label, value, false);
-      if (newValue != null && AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(newValue))) {
+      if (newValue == null || AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(newValue))) {
           return newValue;
       }
       return value;
