@@ -52,12 +52,14 @@ namespace EsnyaFactory {
 
     private void Execute()
     {
-      toCrunch.Concat(toStreaming).Distinct().ToList().ForEach(importer => {
+      ListImporters();
+      var toReimport = toCrunch.Concat(toStreaming).Distinct().Select(importer => {
         if (crunch) importer.crunchedCompression = true;
         if (streaming) importer.streamingMipmaps = true;
         EditorUtility.SetDirty(importer);
-      });
-      AssetDatabase.SaveAssets();
+        return importer.assetPath;
+      }).ToList();
+      toReimport.ForEach(path => AssetDatabase.WriteImportSettingsIfDirty(path));
       AssetDatabase.Refresh();
     }
   }
