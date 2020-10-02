@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.3.0"></a>
+## 1.3.0 (2020-10-02)
+
+### Added
+
+- ✨ FBX Animation Converter [49cb8bd]
+- ✨ SkinnedMeshBaker [d5dd539]
+
+
 <a name="1.2.2"></a>
 ## 1.2.2 (2020-09-09)
 
