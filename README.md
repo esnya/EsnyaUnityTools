@@ -36,6 +36,15 @@ A tool for numbering objects with the same name that have the same parent.
 
 同じ親を持つ同名オブジェクトに連番をつけるツール。VRCSDKも同様の機能を持っているが、オブジェクトが多すぎて固まったとき用。
 
+### FBX Animation Converter
+Scriptable object that extracts necessary parts from the animation imported from FBX, etc., which is created by Assets/Create/EsnyaTools/FBXAnimationConverter.
+Specify the name of ClipPath, the search pattern of ClipPath, and the search pattern of path and property names using regular expressions. In the path and property names, you can refer to the contents of the matched string or group in ClipPath as `$&` and `$1`.
+When you click "Generate" button or the source is updated, an animation clip is generated.
+
+FBXなどからインポートされるアニメーションから必要な部分を取り出すScriptable Object。Assets/Create/EsnyaTools/FBXAnimationConverterから作成する。
+生成するClipPathの名前、ClipPathの検索パターン、パスとプロパティ名の検索パターンを正規表現で記述する。パスとプロパティ名にはClipPathでマッチした文字列やグループの内容を`$&`、`$1`のように参照できる。
+Generateボタンを押すか、インポート元が更新されるとAnimation Clipを生成する。
+
 ## Features for VRC Any Versions
 ### Fix VRCCam
 A tool to modify the VRCCam Prehab, which has poor parameters by default.
