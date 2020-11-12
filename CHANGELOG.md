@@ -1,5 +1,17 @@
 # Changelog
 
+<a name="1.3.1"></a>
+## 1.3.1 (2020-11-12)
+
+### Added
+
+- ✨ if UNITY_POST_PROCESSING_STACK_V2 [[45fd8ae](https://github.com/esnya/VRPG_UDON/commit/45fd8aec45ec99d393c0aa7380783ff0cd98aa20)]
+
+### Miscellaneous
+
+-  :sprakles: None Motion to Replacable [[7151b0e](https://github.com/esnya/VRPG_UDON/commit/7151b0e5c8e05954eb454f12a590d92535865de4)]
+
+
 <a name="1.3.0"></a>
 ## 1.3.0 (2020-10-02)
 
