@@ -2,7 +2,9 @@ namespace EsnyaFactory {
   using System.Linq;
   using UnityEditor;
   using UnityEngine;
+#if UNITY_POST_PROCESSING_STACK_V2
   using UnityEngine.Rendering.PostProcessing;
+#endif
 
   public class VRCCamPatcher : EditorWindow {
 
@@ -38,7 +40,9 @@ namespace EsnyaFactory {
 
       EditorGUILayout.Space();
       EEU.Disabled(camera == null, () => {
+#if UNITY_POST_PROCESSING_STACK_V2
         postProcessing = EditorGUILayout.Toggle("Post Processing", postProcessing);
+#endif
 
         EditorGUILayout.Space();
 
@@ -91,6 +95,7 @@ namespace EsnyaFactory {
     }
 
     private void SetupPostProcessingLayer() {
+#if UNITY_POST_PROCESSING_STACK_V2
       var layer = camera.GetComponent<PostProcessLayer>();
 
       if (layer == null) {
@@ -102,6 +107,7 @@ namespace EsnyaFactory {
 
       layer.volumeTrigger = camera.transform;
       layer.volumeLayer = LayerMask.GetMask(new []{"Everything"});
+#endif
     }
 
     private void SetupBackgroundColor() {
