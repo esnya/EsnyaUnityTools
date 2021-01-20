@@ -26,4 +26,19 @@ namespace EsnyaFactory
             style.marginTop = Constants.spacing;
         }
     }
+
+    public class ExObjectField<T> : BaseField<T>, INotifyValueChanged<T> where T : Object
+    {
+        ObjectField objectField = new ObjectField();
+
+        public ExObjectField() {
+            objectField.objectType = typeof(T);
+            Add(objectField);
+        }
+
+        public override T value {
+            get => objectField.value as T;
+            set => objectField.value = value;
+        }
+    }
 }

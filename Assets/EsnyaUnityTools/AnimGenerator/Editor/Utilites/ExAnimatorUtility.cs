@@ -11,7 +11,7 @@ using VRC.SDK3.Avatars.Components;
 
 namespace EsnyaFactory
 {
-    public class StateMachineBuilderUtility
+    public class ExAnimatorUtility
     {
 #if VRC_SDK_VRCSDK3
         public static RuntimeAnimatorController GetOrCreatePlayableLayer(VRCAvatarDescriptor avatarDescriptor, VRCAvatarDescriptor.AnimLayerType type, RuntimeAnimatorController template)
@@ -45,7 +45,7 @@ namespace EsnyaFactory
         {
             var layer = animatorController.layers.Where(l => l.name == name).FirstOrDefault();
             if (layer != null) return layer;
-            
+
             var stateMachine = new AnimatorStateMachine() {
                 name = name,
             };
@@ -104,10 +104,18 @@ namespace EsnyaFactory
         public static void ClearStateMachine(AnimatorStateMachine stateMachine)
         {
             foreach (var state in stateMachine.states) {
-                stateMachine.RemoveState(state.state);
+                try {
+                    stateMachine.RemoveState(state.state);
+                } catch (System.Exception e) {
+                    Debug.LogWarning(e);
+                }
             }
             foreach (var child in stateMachine.stateMachines) {
-                stateMachine.RemoveStateMachine(child.stateMachine);
+                try {
+                    stateMachine.RemoveStateMachine(child.stateMachine);
+                } catch (System.Exception e) {
+                    Debug.LogWarning(e);
+                }
             }
             EditorUtility.SetDirty(stateMachine);
         }
