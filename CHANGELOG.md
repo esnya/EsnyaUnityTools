@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="1.4.0"></a>
+## 1.4.0 (2021-01-20)
+
+### Added
+
+- ✨ AnimGenerator [cc899df]
+- ✨ StateMachineBuilder [8ba18f8]
+
+
 <a name="1.3.1"></a>
 ## 1.3.1 (2020-11-12)
 
