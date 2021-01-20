@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
-#if VRC_SDK_VRCSDK3
+#if VRC_SDK_VRCSDK3 && !UDON
 using VRC.SDK3.Avatars.Components;
 #endif
 
@@ -13,7 +13,7 @@ namespace EsnyaFactory
 {
     public class ExAnimatorUtility
     {
-#if VRC_SDK_VRCSDK3
+#if VRC_SDK_VRCSDK3 && !UDON
         public static RuntimeAnimatorController GetOrCreatePlayableLayer(VRCAvatarDescriptor avatarDescriptor, VRCAvatarDescriptor.AnimLayerType type, RuntimeAnimatorController template)
         {
             avatarDescriptor.customizeAnimationLayers = true;

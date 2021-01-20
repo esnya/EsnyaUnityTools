@@ -5,7 +5,7 @@ using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
 
-#if VRC_SDK_VRCSDK3
+#if VRC_SDK_VRCSDK3 && !UDON
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
 #endif
@@ -21,7 +21,7 @@ namespace EsnyaFactory
         public Motion falseMotion;
         public float duration = 0.25f;
 
-#if VRC_SDK_VRCSDK3
+#if VRC_SDK_VRCSDK3 && !UDON
         public VRCAvatarDescriptor avatarDescriptor;
         public bool installExpressionsMenu;
         public string menuName;
@@ -77,7 +77,7 @@ namespace EsnyaFactory
 
             return animatorStateTransition;
         }
-#if VRC_SDK_VRCSDK3
+#if VRC_SDK_VRCSDK3 && !UDON
         static VRCExpressionParameters MakeExpressionParameters(VRCAvatarDescriptor avatarDescriptor, ref List<Object> objects)
         {
             EditorUtility.SetDirty(avatarDescriptor);
@@ -150,7 +150,7 @@ namespace EsnyaFactory
             ExAnimatorUtility.ClearStateMachine(stateMachine);
 
             var objects = new List<Object>();
-#if VRC_SDK_VRCSDK3
+#if VRC_SDK_VRCSDK3 && !UDON
             if (installExpressionsMenu) {
                 var expressionParameters = MakeExpressionParameters(avatarDescriptor, ref objects);
                 var expressionParameter = MakeExpressionParameter(expressionParameters, parameter);
