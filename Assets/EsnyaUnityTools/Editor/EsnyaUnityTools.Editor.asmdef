@@ -3,7 +3,9 @@
     "references": [
         "Unity.Postprocessing.Runtime",
         "Unity.Postprocessing.Editor",
-        "EsbyaUnityTools.Scripts"
+        "EsbyaUnityTools.Scripts",
+        "Unity.TextMeshPro",
+        "Unity.TextMeshPro.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
