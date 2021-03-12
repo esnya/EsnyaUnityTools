@@ -106,7 +106,7 @@ namespace EsnyaFactory {
       }
 
       layer.volumeTrigger = camera.transform;
-      layer.volumeLayer = LayerMask.GetMask(new []{"Everything"});
+      layer.volumeLayer = ~0;
 #endif
     }
 
