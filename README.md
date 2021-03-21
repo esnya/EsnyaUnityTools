@@ -51,6 +51,9 @@ A tool to display Gizmo in order to adjust the ViewPosition to the correct posit
 ### ExEquipments (VRCSDK3-AVATAR)
 A gimmick generator that uses ExpressionsMenu to equip items, hold them in your hands and pin them to the world. Add the generated menu as a SubMenu and enjoy it now.
 
+### Gather Udon (VRCSDK3-WORLD)
+Gathers the SerializedProgramAsset of the selected UdonProgram in the Project window into one place.
+
 ----
 ----
 
@@ -98,3 +101,6 @@ ViewPosition を正しい位置に合わせるための Gizmo を表示するツ
 
 ### ExEquipments (VRCSDK3-AVATAR)
 ExpressionsMenuを使ってアイテムを装備したり、手に持ったり、ワールドに固定したりするギミックを生成する。SubMenu用のMenuを出力する。
+
+### Gather Udon (VRCSDK3-WORLD)
+Projectウィンドウで選択したUdonProgramのSerializedProgramAssetを1箇所に集めます。
