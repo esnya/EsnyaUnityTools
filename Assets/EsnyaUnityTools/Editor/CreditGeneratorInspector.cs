@@ -35,8 +35,9 @@ namespace EsnyaFactory {
         generator.files = generator.files
           .Where(file => {
             using (new EditorGUILayout.HorizontalScope()) {
+              var button = GUILayout.Button("Remove", GUILayout.ExpandWidth(false));
               EditorGUILayout.LabelField(file);
-              return !GUILayout.Button("Remove");
+              return !button;
             }
           })
           .ToList();
@@ -51,8 +52,9 @@ namespace EsnyaFactory {
             .Where(file => !generator.files.Contains(file))
             .Where(file => {
               using (new EditorGUILayout.HorizontalScope()) {
+                var button = GUILayout.Button("Add", GUILayout.ExpandWidth(false));
                 EditorGUILayout.LabelField(file);
-                return GUILayout.Button("Add");
+                return button;
               }
             })
             .ToList();
