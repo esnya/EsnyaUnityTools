@@ -39,7 +39,7 @@ namespace EsnyaFactory
 
                     return (src, dst);
                 })
-                .Where(t => t.src != t.dst);
+                .Where(t => Path.GetFullPath(t.src) != Path.GetFullPath(t.dst));
             foreach (var (src, dst) in targets)
             {
                 MoveOrReplace(src, dst);
