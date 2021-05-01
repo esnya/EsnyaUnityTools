@@ -4,8 +4,9 @@ namespace EsnyaFactory {
   using System.Text.RegularExpressions;
   using UnityEngine;
   using UnityEditor;
+    using System.IO;
 
-  public class AutoTexture : EditorWindow {
+    public class AutoTexture : EditorWindow {
     private static void FillTexutre(Material material, string name, Regex pattern, IEnumerable<string> textures) {
       if (material.GetTexture(name) != null) return;
 
@@ -41,14 +42,12 @@ namespace EsnyaFactory {
       Material,
       Texture,
     }
-    public enum ShaderType {
-      Standard,
-      AutodeskInteractive,
-    }
 
-    public ShaderType shaderType = ShaderType.Standard;
+    public Shader shader = Shader.Find("Standard");
     public SearchMode searchMode = SearchMode.Material;
+    public string savePath = "Assets";
     [Space][Header("Patterns")]
+    public string materialName = @"(?<=/)[a-zA-Z0-9_ ]+(?=_[a-zA-Z]+\.[a-z]+$)";
     [Tooltip("Albedo")] public string _MainTex = @"(color|albedo|diffuse)";
     [Tooltip("Metallic")] public string _MetallicGlossMap = @"(metallic|metallness)";
     [Tooltip("Normal")] public string _BumpMap = @"(normal|norm|nrm)";
@@ -74,19 +73,43 @@ namespace EsnyaFactory {
       "_EmissionMap",
       "_SpecGlossMap",
     };
-    private Dictionary<Material, Dictionary<string, string>> textures;
+    private Dictionary<string, Dictionary<string, string>> textureTable;
+    private IEnumerable<string> ListMaterialNames()
+    {
+      if (searchMode == SearchMode.Material)
+      {
+        return Selection.objects
+          .Select(o => o as Material)
+          .Where(m => m != null)
+          .Select(m => m.name);
+      }
+
+      if (searchMode == SearchMode.Texture)
+      {
+        var r = new Regex(materialName, regexOptions);
+        return Selection.objects
+          .Select(o => o as Texture2D)
+          .Where(t => t != null)
+          .Select(AssetDatabase.GetAssetPath)
+          .Select(path => r.Match(path))
+          .Where(m => m.Success)
+          .Select(m => m.Value)
+          .Distinct();
+      }
+
+      return Enumerable.Empty<string>();
+    }
     private void UpdateTextureList()
     {
+      var materialNames = ListMaterialNames();
       var paths = AssetDatabase.FindAssets("t:Texture2D").Select(AssetDatabase.GUIDToAssetPath).ToList();
 
       var props = maps.Select(serializedWindow.FindProperty).ToList();
-      textures = Selection.objects
-        .Select(o => o as Material)
-        .Where(m => m != null)
-        .Select(m => (
-          m, props.Select(p => (p.name, FindTexture(m.name, p.stringValue, paths))).ToDictionary(t => t.name, t => t.Item2)
+      textureTable = materialNames
+        .Select(name => (
+          name, props.Select(p => (p.name, FindTexture(name, p.stringValue, paths))).ToDictionary(t => t.name, t => t.Item2)
         ))
-        .ToDictionary(t => t.m, t => t.Item2);
+        .ToDictionary(t => t.name, t => t.Item2);
     }
 
     private string FindTexture(string name, string pattern, IEnumerable<string> paths)
@@ -97,26 +120,76 @@ namespace EsnyaFactory {
       return founds.FirstOrDefault();
     }
 
+
+    private Material LoadOrCreateMaterial(string name)
+    {
+      var path = $"{savePath}/{name}.mat";
+      var found = AssetDatabase.LoadAssetAtPath<Material>(path);
+      if (found != null) return found;
+
+      if (File.Exists(path)) File.Delete(path);
+      var material = new Material(shader) { name = name };
+      AssetDatabase.CreateAsset(material, path);
+      return material;
+    }
+
+    private IEnumerable<Material> ListTargetMaterials()
+    {
+      if (searchMode == SearchMode.Material)
+      {
+        return Selection.objects.Select(o => o as Material);
+      }
+
+      if (searchMode == SearchMode.Texture)
+      {
+        return textureTable.Keys.Select(LoadOrCreateMaterial);
+      }
+
+      return Enumerable.Empty<Material>();
+    }
+
     private void Apply()
     {
       UpdateTextureList();
-      foreach (var a in textures)
+
+
+      AssetDatabase.StartAssetEditing();
+
+      var materials = ListTargetMaterials();
+      foreach (var material in materials)
       {
-        var material = a.Key;
-        foreach (var b in a.Value)
+        if (!textureTable.ContainsKey(material.name)) continue;
+
+        material.shader = shader;
+
+        var textures = textureTable[material.name];
+
+        foreach (var b in textures)
         {
           var name = b.Key;
           if (!material.HasProperty(name))
           {
-            Debug.Log($"{material.name} has not property ${name}. Skipping.");
+            Debug.Log($"{material.name} has not property {name}. Skipping.");
             continue;
           }
 
-          material.SetTexture(name, AssetDatabase.LoadAssetAtPath<Texture2D>(b.Value));
+          var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(b.Value);
+          material.SetTexture(name, texture);
+
+          var importer = AssetImporter.GetAtPath(b.Value) as TextureImporter;
+          if (importer != null)
+          {
+            if (name == "_BumpMap") importer.textureType = TextureImporterType.NormalMap;
+            importer.sRGBTexture = name == "_MainTex" || name == "_EmissionMap";
+            EditorUtility.SetDirty(importer);
+            importer.SaveAndReimport();
+          }
+
           EditorUtility.SetDirty(material);
         }
       }
 
+      AssetDatabase.StopAssetEditing();
       AssetDatabase.Refresh();
     }
 
@@ -152,11 +225,11 @@ namespace EsnyaFactory {
 
         EditorGUILayout.Space();
 
-        if (textures == null) return;
-        foreach (var a in textures)
+        if (textureTable == null) return;
+        foreach (var a in textureTable)
         {
-          var material = a.Key;
-          EditorGUILayout.LabelField(material.name);
+          var name = a.Key;
+          EditorGUILayout.LabelField(name);
 
           using (new EditorGUI.IndentLevelScope())
           {
