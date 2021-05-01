@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
-using UnityEditor.Experimental.UIElements;
 using UnityEngine;
+using System.Runtime.Versioning;
+#if UNITY_2018
+using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
-using UnityEngine.Experimental.UIElements.StyleSheets;
+#else
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+#endif
+
 
 namespace EsnyaFactory
 {
@@ -33,12 +39,20 @@ namespace EsnyaFactory
         public AnimatorController animatorController;
         public int layerIndex;
 
+#if !UNITY_2018
+        private VisualElement GetRootVisualContainer()
+        {
+            return rootVisualElement;
+        }
+#endif
         void OnValidate() {
             var isValid = animatorController != null
                 && savePath.StartsWith("Assets")
                 && layerIndex < animatorController.layers.Length;
 
-            this.GetRootVisualContainer().Q<Button>("generateButton").SetEnabled(isValid);
+            var root = this.GetRootVisualContainer();
+
+            root.Q<Button>("generateButton").SetEnabled(isValid);
         }
 
         void OnAnimatorControllerChanged(AnimatorController newValue)
@@ -55,7 +69,12 @@ namespace EsnyaFactory
                     layerIndex
                 );
                 container.Add(popupField);
+
+#if UNITY_2018
                 popupField.OnValueChanged(e2 => layerIndex = popupField.index);
+#else
+                popupField.RegisterCallback<InputEvent>(e2 => layerIndex = popupField.index, TrickleDown.NoTrickleDown);
+#endif
             }
             else
             {
@@ -96,12 +115,22 @@ namespace EsnyaFactory
 
             var target = new SerializedObject(this);
 
-            var root = Resources.Load<VisualTreeAsset>("UI/LayerGeneratorWindow").CloneTree(null);
+            var root = Resources.Load<VisualTreeAsset>("UI/LayerGeneratorWindow").CloneTree();
+#if UNITY_2018
             root.AddStyleSheetPath("UI/LayerGeneratorWindow");
+#else
+            root.styleSheets.Add(Resources.Load<StyleSheet>("UI/LayerGeneratorWindow"));
+#endif
             root.Bind(target);
             this.GetRootVisualContainer().Add(root);
 
-            root.Q<ObjectField>("Input:animatorController").OnValueChanged(e => OnAnimatorControllerChanged(e.newValue as AnimatorController));
+            var objectField = root.Q<ObjectField>("Input:animatorController");
+
+#if UNITY_2018
+            objectField.OnValueChanged(e => OnAnimatorControllerChanged(e.newValue as AnimatorController));
+#else
+            objectField.RegisterCallback<InputEvent>(e => OnAnimatorControllerChanged(objectField.value as AnimatorController));
+#endif
 
             OnAnimatorControllerChanged(animatorController);
 
@@ -114,7 +143,12 @@ namespace EsnyaFactory
                 generators.Select(g => g.GetName()).ToList(),
                 generators.Select((g, i) => (g, i)).FirstOrDefault(t => t.Item1.GetName() == generator.GetName()).Item2
             );
+
+#if UNITY_2018
             generatorField.OnValueChanged(e => OnGeneratorChanged(generators[generatorField.index]));
+#else
+            generatorField.RegisterCallback<InputEvent>(e => OnGeneratorChanged(generators[generatorField.index]));
+#endif
             root.Q<VisualElement>("Input:generator").Add(generatorField);
             OnGeneratorChanged(generator);
 

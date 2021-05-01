@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
-using UnityEditor.Experimental.UIElements;
 using UnityEngine;
+#if UNITY_2018
+using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
+#else
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+#endif
 
 namespace EsnyaFactory
 {
@@ -27,11 +32,12 @@ namespace EsnyaFactory
         }
     }
 
+#if UNITY_2018
     public class ExObjectField<T> : BaseField<T>, INotifyValueChanged<T> where T : Object
     {
         ObjectField objectField = new ObjectField();
 
-        public ExObjectField() {
+        public ExObjectField(string label = "") : BaseField(label) {
             objectField.objectType = typeof(T);
             Add(objectField);
         }
@@ -41,4 +47,6 @@ namespace EsnyaFactory
             set => objectField.value = value;
         }
     }
+#else
+#endif
 }

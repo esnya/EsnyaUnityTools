@@ -3,7 +3,11 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+#if UNITY_2018
 using UnityEngine.Experimental.UIElements;
+#else
+using UnityEngine.UIElements;
+#endif
 
 #if VRC_SDK_VRCSDK3 && !UDON
 using VRC.SDK3.Avatars.Components;
@@ -36,7 +40,7 @@ namespace EsnyaFactory
 
         public override VisualElement CreateGUI()
         {
-            return Resources.Load<VisualTreeAsset>("UI/SimpleToggleLayerGenerator").CloneTree(null);
+            return Resources.Load<VisualTreeAsset>("UI/SimpleToggleLayerGenerator").CloneTree();
         }
 
         static AnimatorControllerParameter MakeAnimatorControllerParameter(AnimatorController animatorController, string name)

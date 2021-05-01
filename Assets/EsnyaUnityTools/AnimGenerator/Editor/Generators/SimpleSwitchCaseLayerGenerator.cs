@@ -2,9 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
-using UnityEditor.Experimental.UIElements;
 using UnityEngine;
+#if UNITY_2018
+using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
+#else
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+#endif
+
 
 namespace EsnyaFactory
 {
@@ -34,7 +40,7 @@ namespace EsnyaFactory
 
         public override VisualElement CreateGUI()
         {
-            return  Resources.Load<VisualTreeAsset>("UI/SimpleSwitchCaseLayerGenerator").CloneTree(null);;
+            return  Resources.Load<VisualTreeAsset>("UI/SimpleSwitchCaseLayerGenerator").CloneTree();
         }
 
         public override IEnumerable<Object> Generate(AnimatorController animatorController, AnimatorStateMachine stateMachine)
