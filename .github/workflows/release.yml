@@ -1,9 +1,7 @@
 name: Release Unity Package
 
 on:
-  push:
-    branches:
-      - master
+  - push
 
 jobs:
   prebuild:
