@@ -4,8 +4,9 @@ namespace EsnyaFactory {
   using System.Text.RegularExpressions;
   using UnityEngine;
   using UnityEditor;
+    using Ludiq.OdinSerializer.Utilities;
 
-  public class AutoTexture : EditorWindow {
+    public class AutoTexture : EditorWindow {
     private static void FillTexutre(Material material, string name, Regex pattern, IEnumerable<string> textures) {
       if (material.GetTexture(name) != null) return;
 
@@ -46,6 +47,8 @@ namespace EsnyaFactory {
       AutodeskInteractive,
     }
 
+    public string texturesPath = "Assets/Textures";
+    public string materialsPath = "Assets/Materials";
     public ShaderType shaderType = ShaderType.Standard;
     public SearchMode searchMode = SearchMode.Material;
     [Space][Header("Patterns")]
@@ -74,10 +77,23 @@ namespace EsnyaFactory {
       "_EmissionMap",
       "_SpecGlossMap",
     };
+
+    private string[] GetSearchPaths()
+    {
+      switch (searchMode)
+      {
+        case SearchMode.Material:
+          return new [] { materialsPath };
+        case SearchMode.Texture:
+          return new [] { texturesPath };
+      }
+      return new string[0];
+    }
+
     private Dictionary<Material, Dictionary<string, string>> textures;
     private void UpdateTextureList()
     {
-      var paths = AssetDatabase.FindAssets("t:Texture2D").Select(AssetDatabase.GUIDToAssetPath).ToList();
+      var paths = AssetDatabase.FindAssets("t:Texture2D", new [] { texturesPath }).Select(AssetDatabase.GUIDToAssetPath).ToList();
 
       var props = maps.Select(serializedWindow.FindProperty).ToList();
       textures = Selection.objects
@@ -87,6 +103,7 @@ namespace EsnyaFactory {
           m, props.Select(p => (p.name, FindTexture(m.name, p.stringValue, paths))).ToDictionary(t => t.name, t => t.Item2)
         ))
         .ToDictionary(t => t.m, t => t.Item2);
+        textures.ForEach(t => Debug.Log($"{t.Key}: {t.Value}"));
     }
 
     private string FindTexture(string name, string pattern, IEnumerable<string> paths)
@@ -113,6 +130,8 @@ namespace EsnyaFactory {
           }
 
           material.SetTexture(name, AssetDatabase.LoadAssetAtPath<Texture2D>(b.Value));
+          if (name == "_MainTex") material.SetColor("_Color", Color.white);
+          if (name == "_EmissionMap") material.SetColor("_EmissionColor", Color.white);
           EditorUtility.SetDirty(material);
         }
       }
