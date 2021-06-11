@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.UI;
 using System;
-using Ludiq.OdinSerializer.Utilities;
 using System.Linq;
 
 namespace EsnyaFactory
@@ -68,7 +66,7 @@ namespace EsnyaFactory
                 ref value,
                 allowSceneObjects,
                 "From Selected",
-                (v) => (typeof(T).InheritsFrom<Component>() ? Selection.activeGameObject?.GetComponent<T>() : Selection.activeObject as T) ?? v
+                (v) => (typeof(T).IsSubclassOf(typeof(Component)) ? Selection.activeGameObject?.GetComponent<T>() : Selection.activeObject as T) ?? v
             );
         }
 
