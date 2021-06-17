@@ -5,16 +5,16 @@ using UnityEngine;
 
 namespace EsnyaFactory
 {
-    public enum RendererUtilityTool
+    public enum RendererTool
     {
         MaterialReplace,
         AnchorOverride,
     }
 
-    public class RendererUtility : EditorWindow
+    public class RendererTools : EditorWindow
     {
 
-        public RendererUtilityTool tool;
+        public RendererTool tool;
 
         public GameObject rootObject;
         public bool includeChlidren = true;
@@ -28,10 +28,10 @@ namespace EsnyaFactory
         private Vector2 scrollPosition;
 
 
-        [MenuItem("EsnyaTools/Renderer Utility")]
+        [MenuItem("EsnyaTools/Renderer Tools")]
         private static void ShowWindow()
         {
-            var window = GetWindow<RendererUtility>();
+            var window = GetWindow<RendererTools>();
             window.Show();
         }
 
@@ -40,12 +40,12 @@ namespace EsnyaFactory
             Undo.RecordObject(renderer, "Replace");
             switch (tool)
             {
-                case RendererUtilityTool.MaterialReplace:
+                case RendererTool.MaterialReplace:
                     renderer.sharedMaterials = renderer.sharedMaterials.Select(m => {
                         return (materialReplaceOnly == null || m != materialReplaceOnly) ? m : materialReplaceBy;
                     }).ToArray();
                     break;
-                case RendererUtilityTool.AnchorOverride:
+                case RendererTool.AnchorOverride:
                     renderer.probeAnchor = anchorOverride;
                     break;
             }
@@ -57,9 +57,9 @@ namespace EsnyaFactory
 
             switch (tool)
             {
-                case RendererUtilityTool.MaterialReplace:
+                case RendererTool.MaterialReplace:
                     return materialReplaceOnly == null || renderer.sharedMaterials.Contains(materialReplaceOnly);
-                case RendererUtilityTool.AnchorOverride:
+                case RendererTool.AnchorOverride:
                     return renderer.probeAnchor != anchorOverride;
                 default:
                     return true;
@@ -68,7 +68,7 @@ namespace EsnyaFactory
 
         private void OnEnable()
         {
-            titleContent = new GUIContent("Renderer Utility");
+            titleContent = new GUIContent("Renderer Tools");
         }
 
         private void OnGUI()
@@ -92,7 +92,7 @@ namespace EsnyaFactory
 
                 switch (tool)
                 {
-                    case RendererUtilityTool.MaterialReplace:
+                    case RendererTool.MaterialReplace:
                         if (includeChlidren) EEUI.ObjectFieldWithSelection("Replace Only", ref materialReplaceOnly, true);
                         break;
                 }
@@ -101,10 +101,10 @@ namespace EsnyaFactory
 
                 switch (tool)
                 {
-                    case RendererUtilityTool.MaterialReplace:
+                    case RendererTool.MaterialReplace:
                         EEUI.ObjectFieldWithSelection("Replace By", ref materialReplaceBy, true);
                         break;
-                    case RendererUtilityTool.AnchorOverride:
+                    case RendererTool.AnchorOverride:
                         EditorGUILayout.Space();
                         EEUI.ObjectFieldWithSelection("Anchor Override", ref anchorOverride, true);
                         break;
