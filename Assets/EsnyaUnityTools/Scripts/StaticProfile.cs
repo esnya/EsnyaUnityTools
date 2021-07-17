@@ -35,7 +35,7 @@ namespace EsnyaFactory
                 GameObjectUtility.SetStaticEditorFlags(o, o == gameObject ? 0 : staticFlags);
             }
 
-            var serializedObject = new SerializedObject(origin.GetComponentsInChildren<Renderer>());
+            var serializedObject = new SerializedObject(origin.GetComponentsInChildren<Renderer>().Where(r => !staticExcludeRegex.IsMatch(r.gameObject.name)).ToArray());
             serializedObject.FindProperty("m_ScaleInLightmap").floatValue = lightmapScaleOffset;
             serializedObject.FindProperty("m_LightmapParameters").objectReferenceValue = lightmapParameters;
             serializedObject.ApplyModifiedProperties();
