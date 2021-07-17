@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 using VRC.Udon;
 using VRC.Udon.Editor.ProgramSources;
-using UdonSharp;
 
 namespace EsnyaFactory
 {
