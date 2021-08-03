@@ -32,14 +32,14 @@ namespace EsnyaFactory
         public bool overrideStaticFlags = true;
 #if UNITY_EDITOR
         public StaticEditorFlags staticFlags = (StaticEditorFlags)0xFFFFFF;
-#else
-        public int staticFlags = 0xFFFFFF;
 #endif
 
         [Header("Lightmap")]
         public bool overrideLightmapSettings = true;
         public float lightmapScaleOffset = 1.0f;
+#if UNITY_EDITOR
         public LightmapParameters lightmapParameters;
+#endif
 
         [Header("Shadow")]
         public bool overrideShadowSettings;
