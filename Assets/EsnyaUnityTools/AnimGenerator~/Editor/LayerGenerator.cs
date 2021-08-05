@@ -1,19 +1,22 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
-using UnityEditor.Experimental.UIElements;
 using UnityEngine;
+
+#if UNITY_2018
 using UnityEngine.Experimental.UIElements;
-using UnityEngine.Experimental.UIElements.StyleSheets;
+#else
+using UnityEngine.UIElements;
+#endif
 
 namespace EsnyaFactory
 {
     [System.Serializable]
     public class LayerGenerator : EditorWindow
     {
-        public abstract class Generator : PersistentObject {
+        public abstract class Generator : PersistentObject
+        {
             public abstract string GetName();
             public abstract VisualElement CreateGUI();
             public abstract IEnumerable<Object> Generate(AnimatorController animatorController, AnimatorStateMachine stateMachine);
@@ -33,17 +36,27 @@ namespace EsnyaFactory
         public AnimatorController animatorController;
         public int layerIndex;
 
-        void OnValidate() {
+        private VisualElement GetRoot()
+        {
+#if UNITY_2018
+            return this.GetRootVisualContainer();
+#else
+            return rootVisualElement;
+#endif
+        }
+
+        void OnValidate()
+        {
             var isValid = animatorController != null
                 && savePath.StartsWith("Assets")
                 && layerIndex < animatorController.layers.Length;
 
-            this.GetRootVisualContainer().Q<Button>("generateButton").SetEnabled(isValid);
+            GetRoot().Q<Button>("generateButton").SetEnabled(isValid);
         }
 
         void OnAnimatorControllerChanged(AnimatorController newValue)
         {
-            var container = this.GetRootVisualContainer().Q<VisualElement>("Input:layer");
+            var container = GetRoot().Q<VisualElement>("Input:layer");
             container.Clear();
 
 
@@ -67,7 +80,7 @@ namespace EsnyaFactory
         {
             generator = newValue;
 
-            var container = this.GetRootVisualContainer().Q("generatorProperties");
+            var container = GetRoot().Q("generatorProperties");
             container.Clear();
 
             if (newValue == null)
@@ -99,7 +112,7 @@ namespace EsnyaFactory
             var root = Resources.Load<VisualTreeAsset>("UI/LayerGeneratorWindow").CloneTree(null);
             root.AddStyleSheetPath("UI/LayerGeneratorWindow");
             root.Bind(target);
-            this.GetRootVisualContainer().Add(root);
+            GetRoot().Add(root);
 
             root.Q<ObjectField>("Input:animatorController").OnValueChanged(e => OnAnimatorControllerChanged(e.newValue as AnimatorController));
 
@@ -118,7 +131,8 @@ namespace EsnyaFactory
             root.Q<VisualElement>("Input:generator").Add(generatorField);
             OnGeneratorChanged(generator);
 
-            root.Q<Button>("generateButton").clickable.clicked += () => {
+            root.Q<Button>("generateButton").clickable.clicked += () =>
+            {
                 var objects = generator.Generate(animatorController, animatorController.layers[layerIndex].stateMachine);
                 var name = $"{nameof(LayerGenerator)}_{System.DateTime.Now.ToString("o").Replace(':', '-')}";
                 ExAssetUtility.PackAssets(objects, $"{savePath}/{name}.asset");
