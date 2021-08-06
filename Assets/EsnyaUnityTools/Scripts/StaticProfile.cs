@@ -33,13 +33,16 @@ namespace EsnyaFactory
 #if UNITY_EDITOR
         public StaticEditorFlags staticFlags = (StaticEditorFlags)0xFFFFFF;
 #endif
-
         [Header("Lightmap")]
         public bool overrideLightmapSettings = true;
         public float lightmapScaleOffset = 1.0f;
 #if UNITY_EDITOR
         public LightmapParameters lightmapParameters;
 #endif
+#if UNITY_2019
+        public ReceiveGI receiveGI = ReceiveGI.Lightmaps;
+#endif
+
 
         [Header("Shadow")]
         public bool overrideShadowSettings;
@@ -63,7 +66,7 @@ namespace EsnyaFactory
             var includeRegex = new Regex(includePattern);
             var excludeRegex = new Regex(excludePattern);
             var origin = transform.parent;
-            foreach (var o in origin.GetComponentsInChildren<Transform>().Select(t => t.gameObject).Where(o => includeRegex.IsMatch(o.name) && !excludeRegex.IsMatch(o.name)))
+            foreach (var o in origin.GetComponentsInChildren<Transform>(true).Select(t => t.gameObject).Where(o => includeRegex.IsMatch(o.name) && !excludeRegex.IsMatch(o.name)))
             {
                 if (overrideStaticFlags) GameObjectUtility.SetStaticEditorFlags(o, o == gameObject ? 0 : staticFlags);
 
@@ -75,6 +78,10 @@ namespace EsnyaFactory
                         var serializedObject = new SerializedObject(renderers);
                         serializedObject.FindProperty("m_ScaleInLightmap").floatValue = lightmapScaleOffset;
                         serializedObject.FindProperty("m_LightmapParameters").objectReferenceValue = lightmapParameters;
+#if UNITY_2019
+                        Debug.Log($"{includePattern} {receiveGI} {(int)receiveGI}");
+                        serializedObject.FindProperty("m_ReceiveGI").intValue = (int)receiveGI;
+#endif
                         serializedObject.ApplyModifiedProperties();
                     }
                 }
