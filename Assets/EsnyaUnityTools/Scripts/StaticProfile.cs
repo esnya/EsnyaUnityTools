@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -138,7 +138,10 @@ namespace EsnyaFactory
         private static bool ToggleButton(string label, bool state, GUIStyle baseStyle = null)
         {
             var style = state ? new GUIStyle(baseStyle ?? EditorStyles.miniButton) : baseStyle ?? EditorStyles.miniButton;
-            if (state) style.normal.background = style.active.background;
+            if (state) {
+                style.normal.background = style.active.background;
+                style.fontStyle = FontStyle.BoldAndItalic;
+            }
             return GUILayout.Button(label, style);
         }
 
