@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -76,6 +76,16 @@ namespace EsnyaFactory
                         serializedObject.FindProperty("m_ScaleInLightmap").floatValue = lightmapScaleOffset;
                         serializedObject.FindProperty("m_LightmapParameters").objectReferenceValue = lightmapParameters;
                         serializedObject.ApplyModifiedProperties();
+                    }
+                }
+
+                if (overrideShadowSettings)
+                {
+                    foreach (var renderer in o.GetComponents<Renderer>())
+                    {
+                        Undo.RecordObject(renderer, "Override Shadow Settings");
+                        renderer.shadowCastingMode = shadowCastingMode;
+                        renderer.receiveShadows = receiveShadow;
                     }
                 }
 
