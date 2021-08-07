@@ -79,7 +79,6 @@ namespace EsnyaFactory
                         serializedObject.FindProperty("m_ScaleInLightmap").floatValue = lightmapScaleOffset;
                         serializedObject.FindProperty("m_LightmapParameters").objectReferenceValue = lightmapParameters;
 #if UNITY_2019
-                        Debug.Log($"{includePattern} {receiveGI} {(int)receiveGI}");
                         serializedObject.FindProperty("m_ReceiveGI").intValue = (int)receiveGI;
 #endif
                         serializedObject.ApplyModifiedProperties();
