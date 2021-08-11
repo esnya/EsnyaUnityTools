@@ -11,7 +11,7 @@ namespace EsnyaFactory
     public class RepairUdon : EditorWindow
     {
         [MenuItem("EsnyaTools/Rpair Udon")]
-        private static void ShowWindow()
+        public static void ShowWindow()
         {
             var window = GetWindow<RepairUdon>();
             window.Show();
