@@ -12,8 +12,6 @@ namespace EsnyaFactory
         private static void ReplaceLangVersions()
         {
             var projectRoot = Path.GetDirectoryName(Application.dataPath);
-            Debug.Log(projectRoot);
-
 
             foreach (var path in Directory.EnumerateFiles(projectRoot, "*.csproj"))
             {
