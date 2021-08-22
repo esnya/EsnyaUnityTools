@@ -9,6 +9,8 @@ namespace EsnyaFactory
     public class LangVersionReplacer : AssetPostprocessor
     {
         [InitializeOnLoadMethod]
+        private void OnInit() => ReplaceLangVersions();
+
         private static void ReplaceLangVersions()
         {
             var projectRoot = Path.GetDirectoryName(Application.dataPath);
