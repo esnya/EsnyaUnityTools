@@ -1,4 +1,4 @@
-#if UDON && VRC_SDK_VRCSDK3
+#if UDON
 using System;
 using System.Collections.Generic;
 using System.IO;

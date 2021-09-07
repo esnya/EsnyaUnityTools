@@ -4,7 +4,6 @@
         "VRC.Udon",
         "VRC.Udon.Editor"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -13,5 +12,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [
+        "VRC_SDK_VRCSDK3"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -1,3 +1,4 @@
+#if UDON
 using System.ComponentModel;
 using System;
 using System.Linq;
@@ -126,3 +127,4 @@ namespace EsnyaFactory
 #endif
     }
 }
+#endif
