@@ -2,7 +2,9 @@
     "name": "EsnyaUnityTools.Editor.Udon",
     "references": [
         "VRC.Udon",
-        "VRC.Udon.Editor"
+        "VRC.Udon.Editor",
+        "UdonSharp.Runtime",
+        "UdonSharp.Editor"
     ],
     "includePlatforms": [
         "Editor"

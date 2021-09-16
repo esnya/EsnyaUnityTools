@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="/UIElementsSchema/UIElements.xsd"
+    xsi:schemaLocation="UnityEngine.UIElements /UIElementsSchema/UnityEngine.UIElements.xsd">
+    <engine:VisualElement>
+        <editor:Toolbar style="margin-bottom: 20px">
+            <engine:VisualElement style="flex: 1 1;">
+                <editor:ObjectField name="base-field" viewDataKey="base-field" allow-scene-objects="true" label="Base" />
+            </engine:VisualElement>
+            <engine:VisualElement style="flex: 50px;">
+                <engine:Label text="→" style="-unity-text-align: middle-center;" />
+            </engine:VisualElement>
+            <engine:VisualElement style="flex: 1 1;">
+                <editor:ObjectField name="target-field"  viewDataKey="target-field" allow-scene-objects="true" label="Target" />
+            </engine:VisualElement>
+            <editor:ToolbarSpacer />
+            <!-- <editor:ToolbarToggle name="prefab-apply-button" text="Apply to Prefab" /> -->
+            <editor:ToolbarSpacer />
+            <editor:ToolbarButton name="diff-button" text="Diff" style="flex: 150px; -unity-text-align: middle-center;" />
+        </editor:Toolbar>
+        <engine:ScrollView name="diff-list" />
+        <!-- <engine:Button name="reload-button" text="Reload" /> -->
+    </engine:VisualElement>
+</engine:UXML>

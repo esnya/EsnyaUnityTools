@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="/UIElementsSchema/UIElements.xsd"
+    xsi:schemaLocation="UnityEngine.UIElements /UIElementsSchema/UnityEngine.UIElements.xsd">
+    <editor:Toolbar style="flex-direction: Row;">
+        <engine:VisualElement style="flex: 1 1;">
+            <editor:PropertyField name="base-value" />
+        </engine:VisualElement>
+        <engine:VisualElement style="flex: 50px; -unity-text-align: middle-center;">
+            <engine:Label text="→" />
+        </engine:VisualElement>
+        <engine:VisualElement style="flex: 1 1;">
+            <editor:PropertyField name="target-value" />
+        </engine:VisualElement>
+        <editor:ToolbarButton text="Revert" name="revert-button" style="flex: 150px; -unity-text-align: middle-center;" />
+    </editor:Toolbar>
+</engine:UXML>
