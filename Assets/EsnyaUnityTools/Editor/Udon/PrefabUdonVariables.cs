@@ -70,7 +70,7 @@ namespace EsnyaFactory
                 udonVariables = prefab.GetComponentsInChildren<UdonBehaviour>()
                     .Select(ScanUdon)
                     .Where(uv => uv.variables.Length > 0)
-                    .OrderBy(uv => uv.udonInstance.GetInstanceID()).ToArray(),
+                    .OrderBy(uv => uv.gameObjectName).ToArray(),
             };
         }
         public void Scan()
@@ -79,7 +79,7 @@ namespace EsnyaFactory
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(ScanPrefab)
                 .Where(pv => pv.udonVariables.Length > 0)
-                .OrderBy(pv => pv.prefabInstance.GetInstanceID())
+                .OrderBy(pv => pv.prefabPath)
                 .ToArray();
             EditorUtility.SetDirty(this);
         }
