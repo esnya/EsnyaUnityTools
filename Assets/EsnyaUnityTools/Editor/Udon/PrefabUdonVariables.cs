@@ -41,8 +41,31 @@ namespace EsnyaFactory
 
         [HideInInspector] public PrefabVariables[] udonVariables;
 
+        private static string GetHierarchyPath(Transform target, Transform root = null)
+        {
+            var name = target.gameObject.name;
+            if (target.parent == null) return $"/{name}";
+            if (target.parent == root) return $"{name}";
+            return $"{GetHierarchyPath(target.parent, root)}/{name}";
+        }
+
+        private static int GetComopnentIndex(Component component)
+        {
+            return component.gameObject
+                .GetComponents(component.GetType())
+                .Select((c, i) => (c, i))
+                .Where(t => t.c == component)
+                .Select(t => t.i).Append(-1).First();
+        }
+
         public UdonVariables ScanUdon(UdonBehaviour udon)
         {
+            var prefabRoot = PrefabUtility.IsPartOfAnyPrefab(udon) ? PrefabUtility.GetNearestPrefabInstanceRoot(udon) : null;
+            var pathFromPrefab = prefabRoot != null ? GetHierarchyPath(udon.transform, prefabRoot.transform) : null;
+            var comopnentIndex = GetComopnentIndex(udon);
+            var prefabSource =  PrefabUtility.IsPartOfAnyPrefab(udon) ? AssetDatabase.LoadAssetAtPath<GameObject>(PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(udon)) : null;
+            var prefabInstance = pathFromPrefab != null ? prefabSource?.transform?.Find(pathFromPrefab)?.GetComponents<UdonBehaviour>()?.Skip(comopnentIndex)?.FirstOrDefault() : null;
+
             return new UdonVariables()
             {
                 udonInstance = udon,
@@ -50,13 +73,19 @@ namespace EsnyaFactory
                 variables = udon.publicVariables.VariableSymbols.Select(symbolName =>
                 {
                     udon.publicVariables.TryGetVariableValue(symbolName, out object value);
+
+                    if (prefabInstance != null)
+                    {
+                        prefabInstance.publicVariables.TryGetVariableValue(symbolName, out object prefabValue);
+                        if (prefabValue == value || (value?.Equals(prefabValue) ?? false)) return new UdonVariable();
+                    }
                     return new UdonVariable()
                     {
                         symbolName = symbolName,
                         objectReference = value as UnityEngine.Object,
                         value = value?.ToString() ?? "null",
                     };
-                }).OrderBy(v => v.symbolName).ToArray(),
+                }).Where(v => !string.IsNullOrEmpty(v.symbolName)).OrderBy(v => v.symbolName).ToArray(),
             };
         }
 
