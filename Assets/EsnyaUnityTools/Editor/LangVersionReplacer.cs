@@ -9,7 +9,7 @@ namespace EsnyaFactory
     public class LangVersionReplacer : AssetPostprocessor
     {
         [InitializeOnLoadMethod]
-        private void OnInit() => ReplaceLangVersions();
+        private static void OnInit() => ReplaceLangVersions();
 
         private static void ReplaceLangVersions()
         {
