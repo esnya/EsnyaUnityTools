@@ -1,18 +1,12 @@
 #if UDON
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using Codice.Client.Common;
-using Ludiq.OdinSerializer.Utilities;
 using UdonSharp;
 using UdonSharpEditor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.UIElements.Experimental;
 using VRC.Udon;
 
 namespace EsnyaFactory
@@ -128,7 +122,7 @@ namespace EsnyaFactory
             var basePath = GetRelativePath(baseProxy.transform, (baseValue as GameObject)?.transform ?? (baseValue as Component)?.transform);
             Debug.Log($"{basePath} → {targetPath}");
 
-            if (field.FieldType == typeof(GameObject) || field.FieldType.InheritsFrom<Component>() && targetPath != null && targetPath == basePath) return false;
+            if (field.FieldType == typeof(GameObject) || field.FieldType.IsSubclassOf(typeof(Component)) && targetPath != null && targetPath == basePath) return false;
 
             return true;
         }
@@ -136,7 +130,7 @@ namespace EsnyaFactory
         private static object GetRevertedValue(FieldInfo field, UdonSharpBehaviour baseProxy, UdonSharpBehaviour targetProxy)
         {
             var baseValue = field.GetValue(baseProxy);
-            if (field.FieldType != typeof(GameObject) && !field.FieldType.InheritsFrom<Component>()) return baseValue;
+            if (field.FieldType != typeof(GameObject) && !field.FieldType.IsSubclassOf(typeof(Component))) return baseValue;
 
             var path = GetRelativePath(baseProxy.transform, (baseValue as GameObject)?.transform ?? (baseValue as Transform)?.transform);
             var targetTransform = targetProxy.transform.Find(path);
