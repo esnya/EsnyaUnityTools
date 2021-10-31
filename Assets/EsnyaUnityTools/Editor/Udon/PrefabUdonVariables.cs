@@ -121,19 +121,28 @@ namespace EsnyaFactory
     {
         private void OnPostprocessPrefab(GameObject root)
         {
-            var path = AssetDatabase.GetAssetPath(root);
-            UnityEngine.Object.FindObjectsOfType<PrefabUdonVariables>()
-                .Where(puv => path.StartsWith(Path.GetDirectoryName(AssetDatabase.GetAssetPath(puv))))
-                .ToList()
-                .ForEach(puv => puv.Scan());
+            // var path = AssetDatabase.GetAssetPath(root);
+            // UnityEngine.Object.FindObjectsOfType<PrefabUdonVariables>()
+            //     .Where(puv => path.StartsWith(Path.GetDirectoryName(AssetDatabase.GetAssetPath(puv))))
+            //     .ToList()
+            //     .ForEach(puv => puv.Scan());
+
+            ScanAll();
+        }
+
+        private static void ScanAll()
+        {
+            foreach (var puv in AssetDatabase.FindAssets($"t:{nameof(PrefabUdonVariables)}").Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<PrefabUdonVariables>).Where(puv => puv != null))
+            {
+                Debug.Log($"[{puv}] Scanning");
+                puv.Scan();
+            }
         }
 
         [InitializeOnLoadMethod]
         private static void RegisterCallbacks()
         {
-            EditorSceneManager.sceneSaving += (_, __) => UnityEngine.Object.FindObjectsOfType<PrefabUdonVariables>()
-                .ToList()
-                .ForEach(puv => puv.Scan());
+            EditorSceneManager.sceneSaving += (_, __) => ScanAll();
         }
     }
 
