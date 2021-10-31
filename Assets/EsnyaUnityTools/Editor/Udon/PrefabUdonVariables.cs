@@ -44,8 +44,9 @@ namespace EsnyaFactory
         private static string GetHierarchyPath(Transform target, Transform root = null)
         {
             var name = target.gameObject.name;
-            if (target.parent == null) return $"/{name}";
-            if (target.parent == root) return $"{name}";
+            if (target == root) return "";
+            else if (target.parent == null) return $"/{name}";
+            else if (target.parent == root) return $"{name}";
             return $"{GetHierarchyPath(target.parent, root)}/{name}";
         }
 
@@ -61,10 +62,11 @@ namespace EsnyaFactory
         public UdonVariables ScanUdon(UdonBehaviour udon)
         {
             var prefabRoot = PrefabUtility.IsPartOfAnyPrefab(udon) ? PrefabUtility.GetNearestPrefabInstanceRoot(udon) : null;
-            var pathFromPrefab = prefabRoot != null ? GetHierarchyPath(udon.transform, prefabRoot.transform) : null;
+            var prefabRootPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(udon);
+            var pathFromPrefabRoot = prefabRoot != null ? GetHierarchyPath(udon.transform, prefabRoot.transform) : null;
             var comopnentIndex = GetComopnentIndex(udon);
-            var prefabSource =  PrefabUtility.IsPartOfAnyPrefab(udon) ? AssetDatabase.LoadAssetAtPath<GameObject>(PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(udon)) : null;
-            var prefabInstance = pathFromPrefab != null ? prefabSource?.transform?.Find(pathFromPrefab)?.GetComponents<UdonBehaviour>()?.Skip(comopnentIndex)?.FirstOrDefault() : null;
+            var prefabSource =  prefabRootPath != null ? AssetDatabase.LoadAssetAtPath<GameObject>(prefabRootPath) : null;
+            var prefabInstance = pathFromPrefabRoot != null ? (pathFromPrefabRoot == "" ? prefabSource?.transform : prefabSource?.transform?.Find(pathFromPrefabRoot))?.GetComponents<UdonBehaviour>()?.Skip(comopnentIndex)?.FirstOrDefault() : null;
 
             return new UdonVariables()
             {
@@ -79,6 +81,7 @@ namespace EsnyaFactory
                         prefabInstance.publicVariables.TryGetVariableValue(symbolName, out object prefabValue);
                         if (prefabValue == value || (value?.Equals(prefabValue) ?? false)) return new UdonVariable();
                     }
+
                     return new UdonVariable()
                     {
                         symbolName = symbolName,
