@@ -50,7 +50,7 @@ namespace EsnyaFactory
             return $"{GetHierarchyPath(target.parent, root)}/{name}";
         }
 
-        private static int GetComopnentIndex(Component component)
+        private static int GetComponentIndex(Component component)
         {
             return component.gameObject
                 .GetComponents(component.GetType())
@@ -59,12 +59,33 @@ namespace EsnyaFactory
                 .Select(t => t.i).Append(-1).First();
         }
 
+        private static string GetValueString(object value, Transform root)
+        {
+            if (value == null) return "null";
+            if (value is GameObject)
+            {
+                return $"{GetHierarchyPath((value as GameObject).transform, root)}.GameObject";
+            }
+            if (value is Component)
+            {
+                return $"{GetHierarchyPath((value as Component).transform, root)}.{value.GetType().Name}[{GetComponentIndex(value as Component)}]";
+            }
+            return value.ToString();
+        }
+
+        private static bool IsSameObject(object a, object b, Transform rootA, Transform rootB)
+        {
+            if (a?.GetType() != b?.GetType()) return false;
+            if (!(a is GameObject || a is Component)) return false;
+            return GetValueString(a, rootA) == GetValueString(b, rootB);
+        }
+
         public UdonVariables ScanUdon(UdonBehaviour udon)
         {
             var prefabRoot = PrefabUtility.IsPartOfAnyPrefab(udon) ? PrefabUtility.GetNearestPrefabInstanceRoot(udon) : null;
             var prefabRootPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(udon);
             var pathFromPrefabRoot = prefabRoot != null ? GetHierarchyPath(udon.transform, prefabRoot.transform) : null;
-            var comopnentIndex = GetComopnentIndex(udon);
+            var comopnentIndex = GetComponentIndex(udon);
             var prefabSource =  prefabRootPath != null ? AssetDatabase.LoadAssetAtPath<GameObject>(prefabRootPath) : null;
             var prefabInstance = pathFromPrefabRoot != null ? (pathFromPrefabRoot == "" ? prefabSource?.transform : prefabSource?.transform?.Find(pathFromPrefabRoot))?.GetComponents<UdonBehaviour>()?.Skip(comopnentIndex)?.FirstOrDefault() : null;
 
@@ -79,7 +100,8 @@ namespace EsnyaFactory
                     if (prefabInstance != null)
                     {
                         prefabInstance.publicVariables.TryGetVariableValue(symbolName, out object prefabValue);
-                        if (prefabValue == value || (value?.Equals(prefabValue) ?? false)) return new UdonVariable();
+                        Debug.Log($"{GetValueString(value, prefabRoot?.transform)} {GetValueString(prefabValue, prefabRoot?.transform)} {prefabValue == value || (value?.Equals(prefabValue) ?? false) || IsSameObject(value, prefabValue, prefabRoot?.transform, prefabInstance?.transform)}");
+                        if (prefabValue == value || (value?.Equals(prefabValue) ?? false) || IsSameObject(value, prefabValue, prefabRoot?.transform, prefabInstance?.transform)) return new UdonVariable();
                     }
 
                     return new UdonVariable()
