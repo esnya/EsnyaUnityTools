@@ -1,6 +1,0 @@
-TemplateContainer {
-  flex-grow: 1;
-}
-
-#ContentView {
-}
