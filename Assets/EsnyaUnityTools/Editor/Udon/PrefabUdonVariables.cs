@@ -100,7 +100,7 @@ namespace EsnyaFactory
                     if (prefabInstance != null)
                     {
                         prefabInstance.publicVariables.TryGetVariableValue(symbolName, out object prefabValue);
-                        Debug.Log($"{GetValueString(value, prefabRoot?.transform)} {GetValueString(prefabValue, prefabRoot?.transform)} {prefabValue == value || (value?.Equals(prefabValue) ?? false) || IsSameObject(value, prefabValue, prefabRoot?.transform, prefabInstance?.transform)}");
+                        // Debug.Log($"{GetValueString(value, prefabRoot?.transform)} {GetValueString(prefabValue, prefabRoot?.transform)} {prefabValue == value || (value?.Equals(prefabValue) ?? false) || IsSameObject(value, prefabValue, prefabRoot?.transform, prefabInstance?.transform)}");
                         if (prefabValue == value || (value?.Equals(prefabValue) ?? false) || IsSameObject(value, prefabValue, prefabRoot?.transform, prefabInstance?.transform)) return new UdonVariable();
                     }
 
