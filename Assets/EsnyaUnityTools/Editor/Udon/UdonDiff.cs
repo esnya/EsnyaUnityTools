@@ -154,7 +154,8 @@ namespace EsnyaFactory
             foreach (var property in EnumerateProperties(targetSerialized))
             {
                 var field = targetProxy.GetType().GetField(property.name);
-                Debug.Log($"{field.Name}: {field.GetValue(targetProxy)}, {field.GetValue(baseProxy)}, {Equals(field.GetValue(targetProxy), field.GetValue(baseProxy))}");
+                if (field == null) continue;
+                // Debug.Log($"{field.Name}: {field.GetValue(targetProxy)}, {field.GetValue(baseProxy)}, {Equals(field.GetValue(targetProxy), field.GetValue(baseProxy))}");
 
                 if (!IsDiff(field, baseProxy, targetProxy)) continue;
 
