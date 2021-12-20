@@ -7,11 +7,6 @@ namespace EsnyaFactory
 {
     public class SnapTool : EditorWindow
     {
-        public enum SelectionMode
-        {
-            Selected,
-            ChildrenOfSelected,
-        }
 
         [MenuItem("EsnyaTools/Snap Tool")]
         private static void ShowWindow()
@@ -22,7 +17,6 @@ namespace EsnyaFactory
 
         }
 
-        public SelectionMode selectionMode;
         public SerializedObject serializedObject;
         public float maxDistance = 1.0f;
         public LayerMask layerMask = 0x801;
@@ -36,13 +30,12 @@ namespace EsnyaFactory
         private void OnGUI()
         {
             serializedObject.Update();
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(selectionMode)));
             EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(maxDistance)));
             EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(layerMask)));
             EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(queryTriggerInteraction)));
             serializedObject.ApplyModifiedProperties();
 
-            var transforms = EnumerateSelectedTransforms(selectionMode).ToArray();
+            var transforms = Selection.transforms;
 
             EditorGUILayout.LabelField($"{transforms.Length} object(s) selected.");
 
@@ -52,25 +45,14 @@ namespace EsnyaFactory
                 {
                     Undo.RecordObject(transform, "Snap To Ground");
                     var hitUp = Physics.Raycast(transform.position + Vector3.up * maxDistance, Vector3.down, out var up, maxDistance, layerMask, queryTriggerInteraction);
-                    var hitDown = Physics.Raycast(transform.position, Vector3.down, out var down, maxDistance, layerMask, queryTriggerInteraction);
-                    if (hitUp && (!hitDown || maxDistance - up.distance <= down.distance)) transform.position = up.point;
-                    else if (hitDown && (!hitUp || down.distance <= maxDistance - up.distance)) transform.position = down.point;
+                    if (hitUp) transform.position = up.point;
+                    else
+                    {
+                        var hitDown = Physics.Raycast(transform.position, Vector3.down, out var down, maxDistance, layerMask, queryTriggerInteraction);
+                        if (hitDown) transform.position = down.point;
+                    }
                 }
             }
-        }
-
-        private IEnumerable<Transform> EnumerateSelectedTransforms(SelectionMode selectionMode)
-        {
-            var selectedTransforms = Selection.gameObjects.Select(o => o.transform);
-            switch (selectionMode)
-            {
-                case SelectionMode.Selected:
-                    return selectedTransforms;
-                case SelectionMode.ChildrenOfSelected:
-                    return selectedTransforms.SelectMany(t => Enumerable.Range(0, t.childCount).Select(t.GetChild));
-            }
-
-            return Enumerable.Empty<Transform>();
         }
     }
 }
