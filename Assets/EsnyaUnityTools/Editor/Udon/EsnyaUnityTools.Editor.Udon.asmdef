@@ -16,6 +16,7 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [
+        "UDON",
         "VRC_SDK_VRCSDK3"
     ],
     "versionDefines": [],
