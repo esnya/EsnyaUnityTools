@@ -53,6 +53,10 @@ namespace EsnyaFactory
         public bool overrideColliders = true;
         public ColliderModification colliderModification;
 
+        [Header("Anchor")]
+        public bool overrideAnchor;
+        public Transform anchor;
+
         private void Reset()
         {
             gameObject.tag = "EditorOnly";
@@ -135,6 +139,15 @@ namespace EsnyaFactory
                                 c.enabled = colliderModification == ColliderModification.EnableCollider;
                             }
                             break;
+                    }
+                }
+
+                if (overrideAnchor)
+                {
+                    foreach (var renderer in o.GetComponents<Renderer>())
+                    {
+                        Undo.RecordObject(renderer, "Override Anchor");
+                        renderer.probeAnchor = anchor;
                     }
                 }
             }
