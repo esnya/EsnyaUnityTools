@@ -29,12 +29,12 @@ namespace EsnyaFactory
         [Multiline] public string excludePattern = @"Text \(TMP\)";
 
         [Header("Static Flags")]
-        public bool overrideStaticFlags = true;
+        public bool overrideStaticFlags = false;
 #if UNITY_EDITOR
         public StaticEditorFlags staticFlags = (StaticEditorFlags)0xFFFFFF;
 #endif
         [Header("Lightmap")]
-        public bool overrideLightmapSettings = true;
+        public bool overrideLightmapSettings = false;
         public float lightmapScaleOffset = 1.0f;
 #if UNITY_EDITOR
         public LightmapParameters lightmapParameters;
@@ -47,10 +47,10 @@ namespace EsnyaFactory
         [Header("Shadow")]
         public bool overrideShadowSettings;
         public ShadowCastingMode shadowCastingMode = ShadowCastingMode.TwoSided;
-        public bool receiveShadow = true;
+        public bool receiveShadow = false;
 
         [Header("Collider")]
-        public bool overrideColliders = true;
+        public bool overrideColliders = false;
         public ColliderModification colliderModification;
 
         [Header("Anchor")]
@@ -63,6 +63,8 @@ namespace EsnyaFactory
         }
 
 #if UNITY_EDITOR
+        private void OnValidate() => Apply();
+
         public void Apply()
         {
             gameObject.tag = "EditorOnly";
@@ -197,6 +199,9 @@ namespace EsnyaFactory
                 {
                     var optionValue = (int)optionValues.GetValue(i);
                     var optionName = (string)optionNames.GetValue(i);
+#if UNITY_2019
+                    if (optionName == "LightmapStatic") continue;
+#endif
                     var state = (value & optionValue) != 0;
 
                     if (ToggleButton(optionName, state, EditorStyles.miniButton))
@@ -261,8 +266,9 @@ namespace EsnyaFactory
         }
 
         [InitializeOnLoadMethod]
-        public void RegisterCallback()
+        public static void RegisterCallback()
         {
+            SceneManager.activeSceneChanged += (_, __) => ApplyAll();
             EditorSceneManager.sceneSaving += (_, __) => ApplyAll();
         }
 
