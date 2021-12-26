@@ -63,8 +63,6 @@ namespace EsnyaFactory
         }
 
 #if UNITY_EDITOR
-        private void OnValidate() => Apply();
-
         public void Apply()
         {
             gameObject.tag = "EditorOnly";
@@ -169,7 +167,8 @@ namespace EsnyaFactory
         private static bool ToggleButton(string label, bool state, GUIStyle baseStyle = null)
         {
             var style = state ? new GUIStyle(baseStyle ?? EditorStyles.miniButton) : baseStyle ?? EditorStyles.miniButton;
-            if (state) {
+            if (state)
+            {
                 style.normal.background = style.active.background;
                 style.fontStyle = FontStyle.BoldAndItalic;
             }
@@ -180,7 +179,7 @@ namespace EsnyaFactory
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                EditorGUILayout.LabelField(label, new [] { GUILayout.ExpandWidth(false), GUILayout.Width(EditorGUIUtility.labelWidth) });
+                EditorGUILayout.LabelField(label, new[] { GUILayout.ExpandWidth(false), GUILayout.Width(EditorGUIUtility.labelWidth) });
                 return EnumMaskToggleButtons<E>(value);
             }
         }
@@ -229,39 +228,42 @@ namespace EsnyaFactory
 
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
-            var property = serializedObject.GetIterator();
-            property.NextVisible(true);
-            EditorGUILayout.PropertyField(property, false);
-
-            var visible = true;
-            while (property.NextVisible(false))
+            using (var check = new EditorGUI.ChangeCheckScope())
             {
-                if (IsHeader(property))
+                serializedObject.Update();
+                var property = serializedObject.GetIterator();
+                property.NextVisible(true);
+                EditorGUILayout.PropertyField(property, false);
+
+                var visible = true;
+                while (property.NextVisible(false))
                 {
-                    EditorGUILayout.PropertyField(property, true);
-                    visible = property.propertyType != SerializedPropertyType.Boolean || property.boolValue;
-                }
-                else if (visible)
-                {
-                    if (property.name == nameof(StaticProfile.staticFlags))
-                    {
-                        property.intValue = EnumMaskToggleButtons<StaticEditorFlags>(property.displayName, property.intValue);
-                    }
-                    else
+                    if (IsHeader(property))
                     {
                         EditorGUILayout.PropertyField(property, true);
+                        visible = property.propertyType != SerializedPropertyType.Boolean || property.boolValue;
+                    }
+                    else if (visible)
+                    {
+                        if (property.name == nameof(StaticProfile.staticFlags))
+                        {
+                            property.intValue = EnumMaskToggleButtons<StaticEditorFlags>(property.displayName, property.intValue);
+                        }
+                        else
+                        {
+                            EditorGUILayout.PropertyField(property, true);
+                        }
                     }
                 }
-            }
 
-            serializedObject.ApplyModifiedProperties();
+                serializedObject.ApplyModifiedProperties();
 
-            EditorGUILayout.Space();
+                EditorGUILayout.Space();
 
-            if (GUILayout.Button("Appy Now"))
-            {
-                foreach (var p in targets.Select(t => t as StaticProfile).Where(p => p != null)) p.Apply();
+                if (check.changed || GUILayout.Button("Appy Now"))
+                {
+                    foreach (var p in targets.Select(t => t as StaticProfile).Where(p => p != null)) p.Apply();
+                }
             }
         }
 
