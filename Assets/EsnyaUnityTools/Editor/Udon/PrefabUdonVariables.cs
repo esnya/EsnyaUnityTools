@@ -137,9 +137,6 @@ namespace EsnyaFactory
                 .ToArray();
             EditorUtility.SetDirty(this);
         }
-
-        private void Reset() => Scan();
-        private void OnValidate() => Scan();
     }
 
     public class PrefabUdonVariablesScanner : AssetPostprocessor
