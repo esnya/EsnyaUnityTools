@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="UnityEngine.UIElements"
+    xsi:noNamespaceSchemaLocation="UIElementsSchema/UIElements.xsd"
+    xsi:schemaLocation="UnityEngine.UIElements UIElementsSchema/UnityEngine.UIElements.xsd">
+
+    <Button name="convert" text="Convert To Mesh Renderer" />
+    <Button name="bake" text="Bake Into Mesh Randerer" />
+    <Button name="save" text="Save Mesh as Asset" />
+</UXML>
