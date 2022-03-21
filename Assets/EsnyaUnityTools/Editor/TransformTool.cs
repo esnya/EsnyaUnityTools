@@ -1,48 +1,64 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
+﻿using System.Linq;
 using UnityEngine;
+using UnityEditor;
+using System.Collections.Generic;
 
 namespace EsnyaFactory
 {
-    public class AlignTool : EditorWindow
+    public class TransformTool : EditorWindow
     {
-
-        [MenuItem("EsnyaTools/Align Tool")]
+        [MenuItem("EsnyaTools/Transform Tool")]
         private static void ShowWindow()
         {
-            var window = GetWindow<AlignTool>();
-            window.titleContent = new GUIContent("Align Tool");
+            var window = GetWindow<TransformTool>();
             window.Show();
 
         }
 
-        private SerializedObject serializedObject;
+        [Header("Snap")]
+        public SerializedObject serializedObject;
+        public float maxDistance = 1.0f;
+        public LayerMask layerMask = 0x801;
+        public QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.Ignore;
 
+
+        [Header("Align")]
         public int count = 2;
         public Vector3 step = Vector3.right;
         public Vector3 offset = Vector3.zero;
 
         private void OnEnable()
         {
+            titleContent = new GUIContent("Transform Tool");
             serializedObject = new SerializedObject(this);
         }
 
         private void OnGUI()
         {
             serializedObject.Update();
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(step)));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(maxDistance)));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(layerMask)));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(queryTriggerInteraction)));
 
-            if (GUILayout.Button("Align as Line"))
+            if (GUILayout.Button("Snap To Ground"))
             {
-                var n = 0;
-                foreach (var transform in Selection.transforms.OrderBy(t => t.GetSiblingIndex()))
+                var transforms = Selection.transforms;
+                foreach (var transform in transforms)
                 {
-                    Undo.RecordObject(transform, "Align as Line");
-                    transform.localPosition = offset + step * n++;
+                    Undo.RecordObject(transform, "Snap To Ground");
+                    var hitUp = Physics.Raycast(transform.position + Vector3.up * maxDistance, Vector3.down, out var up, maxDistance, layerMask, queryTriggerInteraction);
+                    if (hitUp) transform.position = up.point;
+                    else
+                    {
+                        var hitDown = Physics.Raycast(transform.position, Vector3.down, out var down, maxDistance, layerMask, queryTriggerInteraction);
+                        if (hitDown) transform.position = down.point;
+                    }
                 }
             }
 
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(count)));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(step)));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(offset)));
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("Duplicate Aligned x", EditorStyles.miniButtonLeft, GUILayout.ExpandWidth(false)))
@@ -63,6 +79,7 @@ namespace EsnyaFactory
                 }
                 EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(count)), GUIContent.none);
             }
+
             serializedObject.ApplyModifiedProperties();
         }
 
@@ -74,6 +91,5 @@ namespace EsnyaFactory
             PrefabUtility.SetPropertyModifications(duplicated, mods);
             return duplicated;
         }
-
     }
 }
