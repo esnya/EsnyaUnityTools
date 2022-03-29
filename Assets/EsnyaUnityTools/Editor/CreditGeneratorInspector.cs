@@ -80,8 +80,9 @@ namespace EsnyaFactory {
           ))
           .Select(t => {
             var name = t.Item1;
-            var license = t.Item2.FirstOrDefault(line => line.ToLower().Contains("license"));
+            var license = t.Item2.FirstOrDefault(line => line.ToLower().Contains("license")) ?? "";
             if (license.Contains("SIL Open Font License")) license = "SIL Open Font License";
+            else if (license.Contains("MIT License") || t.Item2.Any(line => line.Contains("THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND"))) license = "MIT License";
             var copyright = license == "Apache License"
               ? ""
               : t.Item2.FirstOrDefault(line => line.ToLower().Contains("copyright"));

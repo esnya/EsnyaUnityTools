@@ -4,7 +4,7 @@ Common utilities for Unity.
 [日本語はこちら](#Japanese)
 
 ## Requirements
-* Unity 2018.4.20f1
+* Unity 2019.4.31f1 or later
 * [TextMesh Pro](https://docs.unity3d.com/Packages/com.unity.textmeshpro@1.5/manual/index.html) 1.5.3
 
 ### Optional

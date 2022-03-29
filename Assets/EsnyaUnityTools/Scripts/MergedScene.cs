@@ -94,7 +94,7 @@ namespace EsnyaFactory
             }
 
             [InitializeOnLoadMethod]
-            public void RegisterCallback()
+            public static void RegisterCallback()
             {
                 EditorSceneManager.sceneSaved += (scene) => {
                     foreach (var mergedScene in AssetDatabase.FindAssets($"t:{typeof(MergedScene).Name}").Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<MergedScene>).Where(ms => ms.scenes.Any(i => i.sceneAsset.name == scene.name)))
