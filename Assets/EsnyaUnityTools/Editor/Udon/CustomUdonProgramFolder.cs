@@ -53,6 +53,8 @@ namespace EsnyaFactory
                     .Where(t => !t.src.StartsWith(t.dst))
                     .ToArray();
 
+                Debug.Log($"Moving {toMoveList.Length} UdonProgramAsset(s)");
+
                 if (toMoveList.Length > 0)
                 {
 
@@ -78,7 +80,6 @@ namespace EsnyaFactory
                     }
                 }
 
-                Debug.Log($"Moved {toMoveList.Length} UdonProgramAsset(s)");
             }
         }
     }
