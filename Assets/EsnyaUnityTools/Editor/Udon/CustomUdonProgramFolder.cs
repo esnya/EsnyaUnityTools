@@ -36,8 +36,8 @@ namespace EsnyaFactory
 
         private static void MoveOrReplaceToDirectory(string src, string dstDirectory)
         {
-            Debug.Log($"Moving {src} to {dstDirectory}/");
             var dst = $"{dstDirectory}/{Path.GetFileName(src)}";
+            Debug.Log($"Moving {src} to {dst}");
             if (File.Exists(dst)) File.Delete(dst);
             File.Move(src, dst);
         }
