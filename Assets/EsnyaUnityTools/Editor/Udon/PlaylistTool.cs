@@ -87,16 +87,15 @@ namespace EsnyaFactory
         public TargetMode targetMode;
         public MonoBehaviour target;
 
-        private EsnyaUdonToolsSettings settings;
 
         private void OnEnable()
         {
             titleContent = new GUIContent("Playlist Tool");
-            settings = EsnyaUdonToolsSettings.Load();
         }
 
         private void OnGUI()
         {
+            var settings = EsnyaUdonToolsSettings.Instance;
             using (var scope = new EditorGUI.ChangeCheckScope())
             {
                 settings.youtubeApiKey = EditorGUILayout.PasswordField("Api Key", settings.youtubeApiKey);
@@ -113,14 +112,14 @@ namespace EsnyaFactory
             {
                 if (GUILayout.Button("Generate Playlist"))
                 {
-                    GeneratePlaylist();
+                    GeneratePlaylist(settings.youtubeApiKey);
                 }
             }
         }
 
-        async private void GeneratePlaylist()
+        async private void GeneratePlaylist(string youtubeApiKey)
         {
-            var items = await GetPlaylistItems();
+            var items = await GetPlaylistItems(youtubeApiKey);
             if (items == null) return;
 
             if (targetMode == TargetMode.IwaSync3)
@@ -142,7 +141,7 @@ namespace EsnyaFactory
             }
         }
 
-        async private Task<PlaylistItem[]> GetPlaylistItems()
+        async private Task<PlaylistItem[]> GetPlaylistItems(string youtubeApiKey)
         {
             using (var client = new HttpClient())
             {
@@ -150,7 +149,7 @@ namespace EsnyaFactory
                 {
                     playlistId = new Regex("list=([^&? ]+)").Match(playlistId).Groups[1].Value;
                 }
-                var res = await client.GetAsync($"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlistId}&maxResults=50&key={settings.youtubeApiKey}");
+                var res = await client.GetAsync($"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={playlistId}&maxResults=50&key={youtubeApiKey}");
 
                 if (!res.IsSuccessStatusCode)
                 {

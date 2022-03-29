@@ -1,27 +1,83 @@
-using UnityEngine;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using UnityEditor;
+using UnityEngine;
+
+#if VRCSDK && UDON
+using VRC.Udon;
+#endif
 
 namespace EsnyaFactory
 {
     public class EsnyaUdonToolsSettings : ScriptableObject
     {
-        public const string filePath = "Assets/EsnyaUdonTools.asset";
-        [HideInInspector] public string youtubeApiKey;
+        public const string SettingsPath = "ProjectSettings/EsnyaUdonTools.asset";
 
-        public static EsnyaUdonToolsSettings Load()
+        [Tooltip("Saved SerializedUdonPrograms individually for each nearest directory.")]
+        public bool customUdonProgramFolder;
+
+        [HideInInspector]
+        public string youtubeApiKey;
+
+        private static EsnyaUdonToolsSettings instance;
+        public static EsnyaUdonToolsSettings Instance
         {
-            var exists = AssetDatabase.LoadAssetAtPath<EsnyaUdonToolsSettings>(filePath);
-            if (exists) return exists;
+            get
+            {
+                if (!instance)
+                {
+                    instance = CreateInstance<EsnyaUdonToolsSettings>();
+                    if (File.Exists(SettingsPath)) JsonUtility.FromJsonOverwrite(File.ReadAllText(SettingsPath), instance);
+                }
+                return instance;
+            }
+        }
 
-            var newAsset = CreateInstance<EsnyaUdonToolsSettings>();
-            AssetDatabase.CreateAsset(newAsset, filePath);
-            return newAsset;
+        private static SerializedObject serialized;
+        public static SerializedObject Serialized
+        {
+            get
+            {
+                if (serialized == null)
+                {
+                    serialized = new SerializedObject(Instance);
+                }
+                return serialized;
+            }
         }
 
         public void Save()
         {
-            EditorUtility.SetDirty(this);
-            AssetDatabase.Refresh();
+            var json = JsonUtility.ToJson(this);
+            File.WriteAllText(SettingsPath, json);
+        }
+
+        [SettingsProvider]
+        public static SettingsProvider CreateSettingProvider()
+        {
+            return new SettingsProvider("Project/Esnya Unity Tools/Udon", SettingsScope.Project)
+            {
+                label = "Esnya Udon Tools",
+                guiHandler = (searchContext) =>
+                {
+                    using (var change = new EditorGUI.ChangeCheckScope())
+                    {
+                        Serialized.Update();
+
+                        var property = Serialized.GetIterator();
+                        property.NextVisible(true);
+                        while (property.NextVisible(false))
+                        {
+                            EditorGUILayout.PropertyField(property, true);
+                        }
+                        Serialized.ApplyModifiedProperties();
+
+                        if (change.changed) Instance.Save();
+                    }
+                },
+            };
         }
     }
 }
