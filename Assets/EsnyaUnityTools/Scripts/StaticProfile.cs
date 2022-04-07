@@ -57,6 +57,14 @@ namespace EsnyaFactory
         public bool overrideAnchor;
         public Transform anchor;
 
+        [Header("Terrain Grouping ID")]
+        public bool overrideTerrainGroupingId;
+        public int terrainGroupingId;
+
+        [Header("Terrain Material")]
+        public bool overrideTerrainMaterialTemplate;
+        public Material terrainMaterialTemplate;
+
         private void Reset()
         {
             gameObject.tag = "EditorOnly";
@@ -149,6 +157,30 @@ namespace EsnyaFactory
                         Undo.RecordObject(renderer, "Override Anchor");
                         renderer.probeAnchor = anchor;
                     }
+                }
+            }
+
+            var terrains = transform.parent.GetComponentsInChildren<Terrain>(true).ToArray();
+            if (overrideLightmapSettings)
+            {
+                var serializedObject = new SerializedObject(terrains);
+                serializedObject.FindProperty("m_ScaleInLightmap").floatValue = lightmapScaleOffset;
+                if (lightmapParameters) serializedObject.FindProperty("m_LightmapParameters").objectReferenceValue = lightmapParameters;
+                serializedObject.ApplyModifiedProperties();
+            }
+
+            foreach (var terrain in terrains)
+            {
+                if (overrideTerrainGroupingId)
+                {
+                    Undo.RecordObject(terrain, "Override Terrain");
+                    terrain.groupingID = terrainGroupingId;
+                }
+
+                if (overrideTerrainMaterialTemplate)
+                {
+                    Undo.RecordObject(terrain, "Override Terrain");
+                    terrain.materialTemplate = terrainMaterialTemplate;
                 }
             }
         }
