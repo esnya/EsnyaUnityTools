@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Ludiq.OdinSerializer.Utilities;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -21,6 +22,7 @@ namespace EsnyaFactory
         public SerializedObject serializedObject;
         public float maxDistance = 1.0f;
         public LayerMask layerMask = 0x801;
+        public bool useBounds;
         public QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.Ignore;
 
 
@@ -53,6 +55,17 @@ namespace EsnyaFactory
             }
             var split = text.Split(',');
             return new Vector2(float.Parse(split[0]), float.Parse(split[1]));
+        }
+
+        private static float GetGroundDistance(Vector3 origin, float maxDistance, LayerMask layerMask, QueryTriggerInteraction queryTriggerInteraction)
+        {
+            var hitUp = Physics.Raycast(origin + Vector3.up * maxDistance, Vector3.down, out var up, maxDistance, layerMask, queryTriggerInteraction);
+            if (hitUp) return maxDistance - up.distance;
+
+            var hitDown = Physics.Raycast(origin, Vector3.down, out var down, maxDistance, layerMask, queryTriggerInteraction);
+            if (hitDown) return -down.distance;
+
+            return 0;
         }
 
         private void OnGUI()
@@ -97,17 +110,50 @@ namespace EsnyaFactory
                     case nameof(queryTriggerInteraction):
                         if (GUILayout.Button("Snap To Ground"))
                         {
-                            var transforms = Selection.transforms;
-                            foreach (var transform in transforms)
+                            try
                             {
-                                Undo.RecordObject(transform, "Snap To Ground");
-                                var hitUp = Physics.Raycast(transform.position + Vector3.up * maxDistance, Vector3.down, out var up, maxDistance, layerMask, queryTriggerInteraction);
-                                if (hitUp) transform.position = up.point;
-                                else
+                                var transforms = Selection.transforms;
+                                var i = 0;
+                                foreach (var transform in transforms)
                                 {
-                                    var hitDown = Physics.Raycast(transform.position, Vector3.down, out var down, maxDistance, layerMask, queryTriggerInteraction);
-                                    if (hitDown) transform.position = down.point;
+                                    EditorUtility.DisplayProgressBar("Snap To Ground", transform.gameObject.name, (float)i++ / transforms.Length);
+                                    Undo.RecordObject(transform, "Snap To Ground");
+
+                                    var renderer = transform.GetComponent<Renderer>();
+                                    if (useBounds && renderer)
+                                    {
+                                        var bounds = renderer.bounds;
+                                        var center = bounds.center;
+                                        var extents = bounds.extents;
+
+                                        var y = center.y - extents.y;
+
+                                        var left = center.x - extents.x;
+                                        var right = center.x + extents.x;
+
+                                        var top = center.z + extents.z;
+                                        var bottom = center.z - extents.z;
+
+                                        var points = new[] {
+                                            transform.position,
+                                            center + Vector3.Scale(extents, new Vector3( 1, -1,  1)),
+                                            center + Vector3.Scale(extents, new Vector3(-1, -1,  1)),
+                                            center + Vector3.Scale(extents, new Vector3( 1, -1, -1)),
+                                            center + Vector3.Scale(extents, new Vector3(-1, -1, -1)),
+                                        };
+
+                                        var distance = points.Select(origin => GetGroundDistance(origin, maxDistance, layerMask, queryTriggerInteraction)).Min();
+                                        transform.position += Vector3.up * distance;
+                                    }
+                                    else
+                                    {
+                                        transform.position += Vector3.up * GetGroundDistance(transform.position, maxDistance, layerMask, queryTriggerInteraction);
+                                    }
                                 }
+                            }
+                            finally
+                            {
+                                EditorUtility.ClearProgressBar();
                             }
                         }
                         EditorGUILayout.Separator();
