@@ -9,7 +9,6 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
-
 namespace EsnyaFactory
 {
     public class StaticProfile : MonoBehaviour
@@ -27,6 +26,11 @@ namespace EsnyaFactory
 
         [Multiline] public string includePattern = ".*";
         [Multiline] public string excludePattern = @"Text \(TMP\)";
+
+        [Header("Layer")]
+        public bool overrideLayer;
+        public int layer;
+
 
         [Header("Static Flags")]
         public bool overrideStaticFlags = false;
@@ -80,6 +84,7 @@ namespace EsnyaFactory
             var origin = transform.parent;
             foreach (var o in origin.GetComponentsInChildren<Transform>(true).Select(t => t.gameObject).Where(o => includeRegex.IsMatch(o.name) && !excludeRegex.IsMatch(o.name)))
             {
+                if (overrideLayer) o.layer = layer;
                 if (overrideStaticFlags) GameObjectUtility.SetStaticEditorFlags(o, o == gameObject ? 0 : staticFlags);
 
                 if (overrideLightmapSettings)
@@ -251,6 +256,12 @@ namespace EsnyaFactory
             return value;
         }
 
+        private static void LayerPopup(SerializedProperty property)
+        {
+            var layerNames = Enumerable.Range(0, 32).Select(LayerMask.LayerToName).ToArray();
+            property.intValue = EditorGUILayout.Popup(property.displayName, property.intValue, layerNames);
+        }
+
         private static bool IsHeader(SerializedProperty property)
         {
             var type = property.serializedObject.targetObject.GetType();
@@ -280,6 +291,10 @@ namespace EsnyaFactory
                         if (property.name == nameof(StaticProfile.staticFlags))
                         {
                             property.intValue = EnumMaskToggleButtons<StaticEditorFlags>(property.displayName, property.intValue);
+                        }
+                        else if (property.name == nameof(StaticProfile.layer))
+                        {
+                            LayerPopup(property);
                         }
                         else
                         {
