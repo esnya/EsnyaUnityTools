@@ -166,7 +166,7 @@ namespace EsnyaFactory
             }
 
             var terrains = transform.parent.GetComponentsInChildren<Terrain>(true).ToArray();
-            if (overrideLightmapSettings)
+            if (terrains.Length > 0 && overrideLightmapSettings)
             {
                 var serializedObject = new SerializedObject(terrains);
                 serializedObject.FindProperty("m_ScaleInLightmap").floatValue = lightmapScaleOffset;
