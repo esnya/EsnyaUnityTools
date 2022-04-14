@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
-using Ludiq.OdinSerializer.Utilities;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace EsnyaFactory
 {
