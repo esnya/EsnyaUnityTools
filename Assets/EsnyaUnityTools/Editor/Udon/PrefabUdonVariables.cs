@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -20,6 +19,7 @@ namespace EsnyaFactory
             public string symbolName;
             public UnityEngine.Object objectReference;
             public string value;
+            public string[] arrayItems;
         }
 
 
@@ -109,6 +109,7 @@ namespace EsnyaFactory
                         symbolName = symbolName,
                         objectReference = value as UnityEngine.Object,
                         value = value?.ToString() ?? "null",
+                        arrayItems = (value as object[])?.Select(v => v?.ToString() ?? "null")?.ToArray() ?? null,
                     };
                 }).Where(v => !string.IsNullOrEmpty(v.symbolName)).OrderBy(v => v.symbolName).ToArray(),
             };
