@@ -121,7 +121,7 @@ namespace EsnyaFactory
             {
                 prefabPath = path,
                 prefabInstance = prefab,
-                udonVariables = prefab.GetComponentsInChildren<UdonBehaviour>()
+                udonVariables = prefab.GetComponentsInChildren<UdonBehaviour>(true)
                     .Select(ScanUdon)
                     .Where(uv => uv.variables.Length > 0)
                     .OrderBy(uv => uv.gameObjectName).ToArray(),
