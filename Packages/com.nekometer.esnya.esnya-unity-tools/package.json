@@ -13,8 +13,8 @@
     "name": "esnya",
     "url": "https://github.com/esnya"
   },
-  "legacyFolders": [
-    "Assets\\EsnyaUnityTools"
-  ],
+  "legacyFolders": {
+    "Assets\\EsnyaUnityTools": ""
+  },
   "unity": "2019.4"
 }
