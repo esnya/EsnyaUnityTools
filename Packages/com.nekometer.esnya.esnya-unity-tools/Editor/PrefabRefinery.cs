@@ -46,7 +46,16 @@ namespace EsnyaFactory
 
         private static FieldInfo GetModificationField(UnityEngine.Object targetObject, string propertyPath)
         {
-            return targetObject?.GetType()?.GetField(propertyPath, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (targetObject == null) return null;
+
+            var targetType = targetObject.GetType();
+            if (targetType == null) return null;
+
+            if (propertyPath.Contains('.')) {
+                var paths = propertyPath.Split('.');
+                return paths.Skip(1).Aggregate(targetType.GetField(paths.First()), (field, path) => field?.FieldType.GetField(path));
+            }
+            return targetType.GetField(propertyPath, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
 
         private static bool PropertyEquals(UnityEngine.Object targetObject, PropertyModification mod)
