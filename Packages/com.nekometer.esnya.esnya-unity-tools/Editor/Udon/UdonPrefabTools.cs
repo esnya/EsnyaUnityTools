@@ -68,57 +68,58 @@ namespace EsnyaFactory
             return value;
         }
 
-        [MenuItem("Assets/EsnyaTools/Repair U# References")]
+        [MenuItem("Assets/EsnyaTools/Repair U# Params")]
         private static void RepairUdonSharpReferences()
         {
-            try {
-
-            var udonBehaviours = Selection.gameObjects.SelectMany(o => o.GetComponentsInChildren<UdonBehaviour>(true)).ToArray();
-            var i = 0;
-            foreach (var udonBehaviour in udonBehaviours)
+            try
             {
-                EditorUtility.DisplayProgressBar("Repaiering", udonBehaviour.ToString(), (float)(++i) / udonBehaviours.Length);
-
-                if (!UdonSharpEditorUtility.IsUdonSharpBehaviour(udonBehaviour)) continue;
-                var udonSharpBehaviour = UdonSharpEditorUtility.GetProxyBehaviour(udonBehaviour);
-
-                var property = (new SerializedObject((udonBehaviour))).FindProperty("publicVariablesUnityEngineObjects");
-                var publicVariableObjects = new List<UnityEngine.Object>(property.arraySize);
-                foreach (var j in Enumerable.Range(0, property.arraySize))
+                var udonBehaviours = Selection.gameObjects.SelectMany(o => o.GetComponentsInChildren<UdonBehaviour>(true)).ToArray();
+                var i = 0;
+                foreach (var udonBehaviour in udonBehaviours)
                 {
-                    var value = property.GetArrayElementAtIndex(j).objectReferenceValue;
-                    publicVariableObjects.Add(value);
-                }
+                    EditorUtility.DisplayProgressBar("Repaiering", udonBehaviour.ToString(), (float)(++i) / udonBehaviours.Length);
 
-                var serializedPublicVariablesBytes = Convert.FromBase64String(GetHiddenProperty(udonBehaviour, "serializedPublicVariablesBytesString").stringValue);
-                var publicVariables = SerializationUtility.DeserializeValue<IUdonVariableTable>(
-                    serializedPublicVariablesBytes,
-                    (DataFormat)GetHiddenProperty(udonBehaviour, "publicVariablesSerializationDataFormat").intValue,
-                    publicVariableObjects
-                );
-                foreach (var variableSymbol in publicVariables.VariableSymbols)
-                {
-                    try
+                    if (!UdonSharpEditorUtility.IsUdonSharpBehaviour(udonBehaviour)) continue;
+                    var udonSharpBehaviour = UdonSharpEditorUtility.GetProxyBehaviour(udonBehaviour);
+
+                    var property = (new SerializedObject((udonBehaviour))).FindProperty("publicVariablesUnityEngineObjects");
+                    var publicVariableObjects = new List<UnityEngine.Object>(property.arraySize);
+                    foreach (var j in Enumerable.Range(0, property.arraySize))
                     {
-                        if (!publicVariables.TryGetVariableValue(variableSymbol, out var udonValue)) continue;
-                        var udonSharpValue = udonSharpBehaviour.GetProgramVariable(variableSymbol);
-                        var convertedValue = ReplaceProxy(udonValue);
+                        var value = property.GetArrayElementAtIndex(j).objectReferenceValue;
+                        publicVariableObjects.Add(value);
+                    }
 
-                        if (udonSharpValue != udonValue)
+                    var serializedPublicVariablesBytes = Convert.FromBase64String(GetHiddenProperty(udonBehaviour, "serializedPublicVariablesBytesString").stringValue);
+                    var publicVariables = SerializationUtility.DeserializeValue<IUdonVariableTable>(
+                        serializedPublicVariablesBytes,
+                        (DataFormat)GetHiddenProperty(udonBehaviour, "publicVariablesSerializationDataFormat").intValue,
+                        publicVariableObjects
+                    );
+                    foreach (var variableSymbol in publicVariables.VariableSymbols)
+                    {
+                        try
                         {
-                            Debug.Log($"{udonBehaviour}.{variableSymbol}: {udonSharpValue} -> {convertedValue}");
-                            udonSharpBehaviour.SetProgramVariable(variableSymbol, convertedValue);
-                            EditorUtility.SetDirty(udonSharpBehaviour);
+                            if (variableSymbol.StartsWith("___") && variableSymbol.EndsWith("___")) continue;
+                            if (!publicVariables.TryGetVariableValue(variableSymbol, out var udonValue)) continue;
+                            var udonSharpValue = udonSharpBehaviour.GetProgramVariable(variableSymbol);
+                            var convertedValue = ReplaceProxy(udonValue);
+
+                            if (udonSharpValue != udonValue)
+                            {
+                                Debug.Log($"{udonBehaviour}.{variableSymbol}: {udonSharpValue} -> {convertedValue}");
+                                udonSharpBehaviour.SetProgramVariable(variableSymbol, convertedValue);
+                                EditorUtility.SetDirty(udonSharpBehaviour);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError(e);
                         }
                     }
-                    catch (Exception e)
-                    {
-                        Debug.LogError(e);
-                    }
-                }
 
-                AssetDatabase.Refresh();
-            }
+                    AssetDatabase.Refresh();
+                }
             }
             finally
             {
@@ -126,7 +127,7 @@ namespace EsnyaFactory
             }
         }
 
-        [MenuItem("Assets/EsnyaTools/Repair USharp Behaviour", true)]
+        [MenuItem("Assets/EsnyaTools/Repair U# Params", true)]
         private static bool RepairUdonSharpReferencesValidate()
         {
             return Selection.gameObjects.Select(PrefabUtility.GetPrefabAssetType).Any(t => t == PrefabAssetType.Regular || t == PrefabAssetType.Variant);
