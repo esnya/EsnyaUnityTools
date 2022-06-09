@@ -93,7 +93,7 @@ namespace EsnyaFactory
             {
                 udonInstance = udon,
                 gameObjectName = udon.gameObject.name,
-                variables = udon.publicVariables.VariableSymbols.Select(symbolName =>
+                variables = udon.publicVariables.VariableSymbols.Where(symbolName => !symbolName.StartsWith("___") || !symbolName.EndsWith("___")).Select(symbolName =>
                 {
                     udon.publicVariables.TryGetVariableValue(symbolName, out object value);
 
