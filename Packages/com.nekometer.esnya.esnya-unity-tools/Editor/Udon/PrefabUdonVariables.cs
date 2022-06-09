@@ -86,7 +86,7 @@ namespace EsnyaFactory
             var prefabRootPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(udon);
             var pathFromPrefabRoot = prefabRoot != null ? GetHierarchyPath(udon.transform, prefabRoot.transform) : null;
             var comopnentIndex = GetComponentIndex(udon);
-            var prefabSource =  prefabRootPath != null ? AssetDatabase.LoadAssetAtPath<GameObject>(prefabRootPath) : null;
+            var prefabSource = prefabRootPath != null ? AssetDatabase.LoadAssetAtPath<GameObject>(prefabRootPath) : null;
             var prefabInstance = pathFromPrefabRoot != null ? (pathFromPrefabRoot == "" ? prefabSource?.transform : prefabSource?.transform?.Find(pathFromPrefabRoot))?.GetComponents<UdonBehaviour>()?.Skip(comopnentIndex)?.FirstOrDefault() : null;
 
             return new UdonVariables()
@@ -117,10 +117,11 @@ namespace EsnyaFactory
 
         public PrefabVariables ScanPrefab(string path)
         {
+            var basePath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(this)).Replace('\\', '/');
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             return new PrefabVariables()
             {
-                prefabPath = path,
+                prefabPath = path.StartsWith(basePath) ? path.Substring(basePath.Length + 1) : path,
                 prefabInstance = prefab,
                 udonVariables = prefab.GetComponentsInChildren<UdonBehaviour>(true)
                     .Select(ScanUdon)
@@ -144,21 +145,24 @@ namespace EsnyaFactory
     {
         private void OnPostprocessPrefab(GameObject root)
         {
-            // var path = AssetDatabase.GetAssetPath(root);
-            // UnityEngine.Object.FindObjectsOfType<PrefabUdonVariables>()
-            //     .Where(puv => path.StartsWith(Path.GetDirectoryName(AssetDatabase.GetAssetPath(puv))))
-            //     .ToList()
-            //     .ForEach(puv => puv.Scan());
-
             ScanAll();
         }
 
-        private static void ScanAll()
+        public static void ScanAll()
         {
-            foreach (var puv in AssetDatabase.FindAssets($"t:{nameof(PrefabUdonVariables)}").Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<PrefabUdonVariables>).Where(puv => puv != null))
+            AssetDatabase.StartAssetEditing();
+            AssetDatabase.Refresh();
+            try
             {
-                Debug.Log($"[{puv}] Scanning");
-                puv.Scan();
+                foreach (var puv in AssetDatabase.FindAssets($"t:{nameof(PrefabUdonVariables)}").Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<PrefabUdonVariables>).Where(puv => puv != null))
+                {
+                    puv.Scan();
+                }
+            }
+            finally
+            {
+                AssetDatabase.SaveAssets();
+                AssetDatabase.StopAssetEditing();
             }
         }
 
@@ -176,7 +180,16 @@ namespace EsnyaFactory
         {
             base.OnInspectorGUI();
 
-            if (GUILayout.Button("Update Now")) (target as PrefabUdonVariables)?.Scan();
+            if (GUILayout.Button("Update Now"))
+            {
+                (target as PrefabUdonVariables)?.Scan();
+                AssetDatabase.SaveAssets();
+            }
+
+            if (GUILayout.Button("Scan All"))
+            {
+                PrefabUdonVariablesScanner.ScanAll();
+            }
         }
     }
 }
