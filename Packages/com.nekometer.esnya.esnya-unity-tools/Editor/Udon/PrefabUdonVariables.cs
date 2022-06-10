@@ -5,8 +5,6 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using VRC.Udon;
-using VRC.Udon.Common.Interfaces;
-using VRC.Udon.Serialization.OdinSerializer;
 
 namespace EsnyaFactory
 {
@@ -97,13 +95,6 @@ namespace EsnyaFactory
                 {
                     udon.publicVariables.TryGetVariableValue(symbolName, out object value);
 
-                    // if (prefabInstance != null)
-                    // {
-                    //     prefabInstance.publicVariables.TryGetVariableValue(symbolName, out object prefabValue);
-                    //     // Debug.Log($"{GetValueString(value, prefabRoot?.transform)} {GetValueString(prefabValue, prefabRoot?.transform)} {prefabValue == value || (value?.Equals(prefabValue) ?? false) || IsSameObject(value, prefabValue, prefabRoot?.transform, prefabInstance?.transform)}");
-                    //     if (prefabValue == value || (value?.Equals(prefabValue) ?? false) || IsSameObject(value, prefabValue, prefabRoot?.transform, prefabInstance?.transform)) return new UdonVariable();
-                    // }
-
                     return new UdonVariable()
                     {
                         symbolName = symbolName,
@@ -139,14 +130,6 @@ namespace EsnyaFactory
                 .ToArray();
             EditorUtility.SetDirty(this);
         }
-    }
-
-    public class PrefabUdonVariablesScanner : AssetPostprocessor
-    {
-        private void OnPostprocessPrefab(GameObject root)
-        {
-            ScanAll();
-        }
 
         public static void ScanAll()
         {
@@ -173,6 +156,7 @@ namespace EsnyaFactory
         }
     }
 
+
     [CustomEditor(typeof(PrefabUdonVariables))]
     public class PrefabUdonVariablesEditor : Editor
     {
@@ -188,7 +172,7 @@ namespace EsnyaFactory
 
             if (GUILayout.Button("Scan All"))
             {
-                PrefabUdonVariablesScanner.ScanAll();
+                PrefabUdonVariables.ScanAll();
             }
         }
     }
