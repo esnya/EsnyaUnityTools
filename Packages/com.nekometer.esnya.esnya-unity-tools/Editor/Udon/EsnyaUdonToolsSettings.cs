@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,6 +14,9 @@ namespace EsnyaFactory
 
         [Tooltip("Saved SerializedUdonPrograms individually for each nearest directory.")]
         public bool customUdonProgramFolder;
+
+        [Tooltip("Increment version of package.json when world buliding.")]
+        public bool autoNpmPackageVersion;
 
         [HideInInspector]
         public string youtubeApiKey;
