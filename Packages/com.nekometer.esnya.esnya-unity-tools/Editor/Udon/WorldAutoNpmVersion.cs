@@ -73,9 +73,9 @@ namespace EsnyaFactory
 
             private string GetVersionArguments(string worldId)
             {
-                if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android) return $"version {version}+android";
-                if (IsRerelase(worldId)) return $"version {ReleaseTypeDialog()}";
-                if (IsPrerelease(worldId)) return $"version prerelease --preid {GetPrereleaseChannel(worldId)}";
+                if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android) return $"version {version}+android  -f";
+                if (IsRerelase(worldId)) return $"version {ReleaseTypeDialog()} -f ";
+                if (IsPrerelease(worldId)) return $"version prerelease --preid {GetPrereleaseChannel(worldId)}  -f";
                 return null;
             }
 
