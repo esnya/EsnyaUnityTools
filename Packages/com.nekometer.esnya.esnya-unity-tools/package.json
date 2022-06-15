@@ -13,7 +13,6 @@
     "url": "https://github.com/esnya"
   },
   "dependencies": {
-    "com.unity.editorcoroutines": "1.0.0"
   },
   "legacyFolders": {
     "Assets\\EsnyaUnityTools": ""
