@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:Template name="CreatePackageView" src="CreatePackageView.uxml" />
+    <ui:Template name="PackageInfoView" src="PackageInfoView.uxml" />
+    <ui:ScrollView style="flex-grow: 1;">
+        <Style src="WorldIdManager.uss" />
+        <ui:VisualElement class="onlyHasPackage">
+            <ui:Instance template="PackageInfoView" name="PackageInfoView" />
+        </ui:VisualElement>
+        <ui:VisualElement class="onlyNoPackage">
+            <ui:Instance template="CreatePackageView" name="CreatePackageView" />
+        </ui:VisualElement>
+    </ui:ScrollView>
+</ui:UXML>

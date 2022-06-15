@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="release">
+        <ui:Button name="major" text="Major" />
+        <ui:Button name="minor" text="Minor" />
+        <ui:Button name="patch" text="Patch" />
+    </ui:VisualElement>
+    <ui:VisualElement name="pre">
+        <ui:Button name="premajor" text="Pre Major" />
+        <ui:Button name="preminor" text="Pre Minor" />
+        <ui:Button name="prepatch" text="Pre Patch" />
+        <ui:Button name="prerelease" text="Prerelease" />
+    </ui:VisualElement>
+    <ui:Button name="cancel" text="Skip" />
+</ui:UXML>

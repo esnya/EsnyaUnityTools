@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:TextField name="channel" label="channel" />
+    <ui:VisualElement name="footer" style="flex-direction: row; justify-content: flex-end;">
+        <ui:Button name="ok" text="Assign" />
+        <ui:Button name="cancel" text="Cancel" />
+    </ui:VisualElement>
+</ui:UXML>

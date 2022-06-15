@@ -1,0 +1,34 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="label-field" class="labelField" style="flex-direction: row; flex-basis: 20px; align-items: auto;">
+        <Style src="WorldIdManager.uss" />
+        <ui:Label text="Name" style="flex-basis: 120px; flex-grow: 0; flex-shrink: 0;" />
+        <ui:Label binding-path="packageInfo.name" style="flex-shrink: 1; flex-grow: 1;" />
+        <ui:Button name="reload" text="Reload" />
+    </ui:VisualElement>
+    <ui:VisualElement name="label-field" class="labelField" style="flex-direction: row; flex-basis: 20px; align-items: auto;">
+        <Style src="WorldIdManager.uss" />
+        <ui:Label text="Version" style="flex-basis: 120px; flex-grow: 0; flex-shrink: 0;" />
+        <ui:Label binding-path="packageInfo.version" />
+    </ui:VisualElement>
+    <ui:VisualElement name="label-field" class="labelField" style="flex-direction: row; flex-basis: 20px; align-items: auto;">
+        <Style src="WorldIdManager.uss" />
+        <ui:Label text="World ID" style="flex-basis: 120px; flex-grow: 0; flex-shrink: 0;" />
+        <ui:Label binding-path="worldId" style="flex-grow: 1; flex-shrink: 1;" />
+        <ui:Button text="Detach" name="detach" class="onlyHasWorldId" />
+    </ui:VisualElement>
+    <ui:VisualElement name="label-field" class="labelField" style="flex-direction: row; flex-basis: 20px; align-items: auto;">
+        <Style src="WorldIdManager.uss" />
+        <ui:Label text="Is Release" style="flex-basis: 120px; flex-grow: 0; flex-shrink: 0;" />
+        <ui:Label binding-path="isRelease" />
+    </ui:VisualElement>
+    <ui:VisualElement name="label-field" class="labelField" style="flex-direction: row; flex-basis: 20px; align-items: auto;">
+        <Style src="WorldIdManager.uss" />
+        <ui:Label text="Release Channel" style="flex-basis: 120px; flex-grow: 0; flex-shrink: 0;" />
+        <ui:Label binding-path="releaseChannel" style="flex-shrink: 1; flex-grow: 1;" />
+        <ui:Button text="Change" name="change-channel" />
+        <ui:Button text="Assign" name="assign-channel" class="onlyNoReleaseChannel" />
+    </ui:VisualElement>
+    <ui:Button text="Manual Increment Version" name="manual-increment-version">
+        <Style src="WorldIdManager.uss" />
+    </ui:Button>
+</ui:UXML>
