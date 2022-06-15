@@ -14,8 +14,7 @@
     "url": "https://github.com/esnya"
   },
   "dependencies": {
-    "com.nekometer.esnya.esnya-unity-tools": "3.12.0-beta.7",
-    "com.unity.editorcoroutines": "1.0.0"
+    "com.nekometer.esnya.esnya-unity-tools": "3.12.0-beta.7"
   },
   "legacyFolders": {
     "Assets\\EsnyaUnityTools": ""
