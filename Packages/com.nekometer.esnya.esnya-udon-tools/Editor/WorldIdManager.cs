@@ -16,7 +16,7 @@ namespace EsnyaFactory
         public int callbackOrder => 200;
 
         [MenuItem("EsnyaTools/World ID Manager")]
-        publics static void ShowWindow() => GetWindow<WorldIdManager>().Show();
+        public static void ShowWindow() => GetWindow<WorldIdManager>().Show();
 
         private SerializedObject serializedObject;
         public PackageInfo packageInfo;
