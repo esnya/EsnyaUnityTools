@@ -1,20 +1,16 @@
-#if UDON
-using System.ComponentModel;
 using System;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using VRC.Udon;
-#if UNITY_2019
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-#endif
 
 namespace EsnyaFactory
 {
     public class UdonList : EditorWindow
     {
-#if UNITY_2019
         private class UdonListItem : VisualElement
         {
             private Label nameLabel = new Label(), sourceLabel = new Label();
@@ -50,7 +46,7 @@ namespace EsnyaFactory
 
             public UdonListView()
             {
-                udonList = FindObjectsOfType<UdonBehaviour>();
+                udonList = SceneManager.GetActiveScene().GetRootGameObjects().SelectMany(o => o.GetComponentsInChildren<UdonBehaviour>(true)).ToArray();
 
                 style.flexGrow = 1.0f;
 
@@ -124,7 +120,5 @@ namespace EsnyaFactory
             titleContent = new GUIContent("Udon List");
             rootVisualElement.Add(new UdonListView());
         }
-#endif
     }
 }
-#endif

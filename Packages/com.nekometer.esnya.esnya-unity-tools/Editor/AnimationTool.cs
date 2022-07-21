@@ -240,24 +240,28 @@ namespace EsnyaFactory
             }
             else
             {
-                var mask = AnimationUtility.GetCurveBindings(clip).Select((binding) =>
-                {
-                    var path = binding.path;
-                    var curve = AnimationUtility.GetEditorCurve(clip, binding);
-                    var variations = curve.keys.Select(a => a.value).Distinct().Count();
-                    return (path, variations);
-                }).GroupBy(b => b.path, (path, group) =>
-                {
-                    var value = group.Select(a => a.variations).Any(i => i > 1);
-                    return (path, value);
-                }).ToArray();
+                var mask = AnimationUtility.GetCurveBindings(clip)
+                    .Select((binding) =>
+                    {
+                        var path = binding.path;
+                        var curve = AnimationUtility.GetEditorCurve(clip, binding);
+                        var variations = curve.keys.Select(a => a.value).Distinct().Count();
+                        return (path, variations);
+                    })
+                    .GroupBy(b => b.path, (path, group) =>
+                    {
+                        var value = group.Select(a => a.variations).Any(i => i > 1);
+                        return (path, value);
+                    })
+                    .Where(t => t.value)
+                    .ToArray();
 
                 maskProperty.arraySize = mask.Length;
                 foreach (var (path, value, i) in mask.Select((a, i) => (a.path, a.value, i)))
                 {
                     var elementProperty = maskProperty.GetArrayElementAtIndex(i);
                     elementProperty.FindPropertyRelative("m_Path").stringValue = path;
-                    elementProperty.FindPropertyRelative("m_Weight").floatValue = (value || unmask) ? 1.0f : 0.0f;
+                    elementProperty.FindPropertyRelative("m_Weight").floatValue = 1.0f;
                 }
             }
 
