@@ -156,9 +156,23 @@ namespace EsnyaFactory
             else rootVisualElement.RemoveFromClassList(className);
         }
 
+        private string GetSceneDirectory(Scene scene)
+        {
+            if (string.IsNullOrEmpty(scene.path)) return null;
+            try
+            {
+                return Path.GetDirectoryName(scene.path);
+            }
+            finally
+            {
+            }
+            return null;
+        }
+
         private void FindPackage(Scene scene)
         {
-            packageInfo = PackageInfo.Find(Path.GetDirectoryName(scene.path));
+            var sceneDirectory = GetSceneDirectory(scene);
+            packageInfo = string.IsNullOrEmpty(sceneDirectory) ? null : PackageInfo.Find(sceneDirectory);
             pipelineManager = scene.GetRootGameObjects().SelectMany(o => o.GetComponentsInChildren<PipelineManager>(true))?.FirstOrDefault();
 
             hasPackage = packageInfo != null;
@@ -169,7 +183,7 @@ namespace EsnyaFactory
                 packageInfo = new PackageInfo()
                 {
                     name = new string(scene.name.ToLower().Select(c => !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9') ? '-' : c).ToArray()).Trim('-'),
-                    rootDirectory = Path.GetDirectoryName(scene.path),
+                    rootDirectory = sceneDirectory,
                     worldId = pipelineManager?.blueprintId,
                 };
                 serializedObject.Update();
@@ -186,7 +200,7 @@ namespace EsnyaFactory
 
             ToggleRootClass("hasWorldId", !string.IsNullOrEmpty(worldId));
             ToggleRootClass("hasReleaseChannel", !string.IsNullOrEmpty(releaseChannel));
-       }
+        }
 
         private void AssignChannel(string channel)
         {
@@ -253,7 +267,8 @@ namespace EsnyaFactory
                     releaseType = value;
                     window.Close();
                 }
-                window.rootVisualElement.Query<Button>().ForEach(button => {
+                window.rootVisualElement.Query<Button>().ForEach(button =>
+                {
                     if (Enum.TryParse<Npm.VersionIncrementLevel>(button.name, out var value))
                     {
                         button.clicked += () => SelectVersionIncrementLevel(value);

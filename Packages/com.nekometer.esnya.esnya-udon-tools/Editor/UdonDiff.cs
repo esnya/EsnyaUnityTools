@@ -14,7 +14,7 @@ namespace EsnyaFactory
     public class UdonDiff : EditorWindow
     {
 
-        [MenuItem("EsnyaTools/UdonDiff")]
+        [MenuItem("EsnyaTools/Udon Diff")]
         private static void ShowWindow()
         {
             var window = GetWindow<UdonDiff>();
