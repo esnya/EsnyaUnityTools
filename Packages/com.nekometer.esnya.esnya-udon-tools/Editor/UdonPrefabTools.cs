@@ -105,10 +105,10 @@ namespace EsnyaFactory
                             var udonSharpValue = udonSharpBehaviour.GetProgramVariable(variableSymbol);
                             var convertedValue = ReplaceProxy(udonValue);
 
-                            if (udonSharpValue != udonValue)
+                            if (udonValue is float @f ? !Mathf.Approximately(@f, (float)udonSharpValue) : udonSharpValue != udonValue)
                             {
                                 Debug.Log($"{udonBehaviour}.{variableSymbol}: {udonSharpValue} -> {convertedValue}");
-                                udonSharpBehaviour.SetProgramVariable(variableSymbol, convertedValue);
+                                udonSharpBehaviour.SetProgramVariable(variableSymbol, convertedValue is object[] @a ? a.Select(v => v as object).ToArray() : convertedValue);
                                 EditorUtility.SetDirty(udonSharpBehaviour);
                             }
                         }
