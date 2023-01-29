@@ -47,7 +47,7 @@ namespace EsnyaFactory
         {
             if (EsnyaUdonToolsSettings.Instance.customUdonProgramFolder)
             {
-                var toMoveList = AssetDatabase.FindAssets("t:UdonAssemblyProgramAsset", new[] { "Assets" })
+                var toMoveList = AssetDatabase.FindAssets("t:UdonAssemblyProgramAsset", new[] { "Assets", "Packages" })
                     .Select(AssetDatabase.GUIDToAssetPath)
                     .Select(path => (src: AssetDatabase.GetAssetPath(AssetDatabase.LoadAssetAtPath<UdonAssemblyProgramAsset>(path).SerializedProgramAsset), dst: GetCustomUdonProgramFolder(path)))
                     .Where(t => !t.src.StartsWith(t.dst))
@@ -57,7 +57,6 @@ namespace EsnyaFactory
 
                 if (toMoveList.Length > 0)
                 {
-
                     AssetDatabase.StartAssetEditing(); try
                     {
                         foreach (var (src, dst) in toMoveList)
