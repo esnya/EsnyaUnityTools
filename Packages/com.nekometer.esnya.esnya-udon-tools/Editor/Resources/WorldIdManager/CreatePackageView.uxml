@@ -1,9 +1,0 @@
-
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:Label text="A package.json is not exists. Create now?" style="margin-bottom: 5px;" />
-    <ui:TextField label="Name" name="packageInfo.name" binding-path="name" />
-    <ui:TextField label="Version" name="packageInfo.version" binding-path="version" value="1.0.0" />
-    <ui:VisualElement name="footer" style="flex-direction: row; justify-content: flex-end; flex-shrink: 0; margin-top: 10px;">
-        <ui:Button name="create-package" text="Create package.json" />
-    </ui:VisualElement>
-</ui:UXML>
