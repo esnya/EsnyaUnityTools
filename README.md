@@ -7,6 +7,11 @@ Common utilities for Unity.
 * Unity 2019.4.31f1 or later
 * [TextMesh Pro](https://docs.unity3d.com/Packages/com.unity.textmeshpro@1.5/manual/index.html) 1.5.3
 
+## Getting Started
+1. Open Package Manager window.
+2. Click + button and select `Add package from git URL`
+4. Enter `git+https://github.com/esnya/EsnyaUnityTools.git?path=/Packages/com.nekometer.esnya.esnya-unity-tools` (or `git+https://github.com/esnya/EsnyaUnityTools.git?path=/Packages/com.nekometer.esnya.esnya-unity-tools#beta` to use beta releases) and press Add button.
+
 ### Optional
 * [PostProcessing](https://docs.unity3d.com/Packages/com.unity.postprocessing@2.1/manual/Installation.html) 3.1.0
 * VRCSDK3 Avatars
