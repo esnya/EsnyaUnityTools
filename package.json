@@ -1,4 +1,5 @@
 {
+  "name": "esnya-unity-tools",
   "version": "3.12.0-beta.7",
   "workspaces": [
     "Packages/*"
