@@ -1,17 +1,18 @@
 {
   "name": "com.nekometer.esnya.esnya-unity-tools",
-  "displayName": "EsnyaUnityTools",
+  "displayName": "Esnya Unity Tools",
   "version": "3.12.0-beta.7",
   "private": true,
   "description": "Unity Extentions Pack",
   "keywords": [
-    "VRChat",
     "Unity"
   ],
   "license": "MIT",
   "author": {
     "name": "esnya",
     "url": "https://github.com/esnya"
+  },
+  "dependencies": {
   },
   "legacyFolders": {
     "Assets\\EsnyaUnityTools": ""
