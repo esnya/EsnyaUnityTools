@@ -313,7 +313,6 @@ namespace EsnyaFactory {
       } catch (System.Exception e) {
         Debug.LogError("[ExEquipments] Setup failed.");
         Debug.LogException(e);
-        EditorUtility.ClearProgressBar();
         EditorUtility.DisplayDialog("ExEquipments", $"Setup failed:\n{e.Message}", "OK");
       } finally {
         EditorUtility.ClearProgressBar();
