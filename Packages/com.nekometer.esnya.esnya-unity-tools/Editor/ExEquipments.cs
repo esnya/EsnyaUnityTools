@@ -234,8 +234,9 @@ namespace EsnyaFactory {
     private void SetupParameters() {
       if (expressionParameters.FindParameter(item.name) != null) return;
       var newParameterCost = VRCExpressionParameters.TypeCost(VRCExpressionParameters.ValueType.Int);
-      if (expressionParameters.CalcTotalCost() + newParameterCost > VRCExpressionParameters.MAX_PARAMETER_COST) {
-        throw new System.Exception($"Expression parameters are full (cost: {expressionParameters.CalcTotalCost()}/{VRCExpressionParameters.MAX_PARAMETER_COST}). Please free up at least {newParameterCost} bits.");
+      var currentParameterCost = expressionParameters.CalcTotalCost();
+      if (currentParameterCost + newParameterCost > VRCExpressionParameters.MAX_PARAMETER_COST) {
+        throw new System.Exception($"Expression parameters are full (cost: {currentParameterCost}/{VRCExpressionParameters.MAX_PARAMETER_COST}). Please free up at least {newParameterCost} bits.");
       }
       var emptyEntry = expressionParameters.parameters.Select((p, i) => new { p, i }).FirstOrDefault(a => string.IsNullOrEmpty(a.p.name));
       var newParameter = new VRCExpressionParameters.Parameter() {
@@ -306,8 +307,11 @@ namespace EsnyaFactory {
 
         EditorUtility.DisplayProgressBar("ExEquipments", "Finalize", (float)(step++) / totalSteps);
         AssetDatabase.Refresh();
+      } catch (ExitGUIException) {
+        throw;
       } catch (System.Exception e) {
-        Debug.LogError($"[ExEquipments] Setup failed: {e.Message}\n{e.StackTrace}");
+        Debug.LogError("[ExEquipments] Setup failed.");
+        Debug.LogException(e);
         EditorUtility.DisplayDialog("ExEquipments", $"Setup failed:\n{e.Message}", "OK");
       } finally {
         EditorUtility.ClearProgressBar();
