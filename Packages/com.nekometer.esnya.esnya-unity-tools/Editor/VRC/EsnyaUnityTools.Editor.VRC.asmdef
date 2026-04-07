@@ -1,0 +1,29 @@
+{
+    "name": "EsnyaUnityTools.Editor.VRC",
+    "references": [
+        "EsbyaUnityTools.Scripts",
+        "EsnyaUnityTools.Scripts.VRC",
+        "EsnyaUnityTools.Editor",
+        "VRC.SDK3.Avatars",
+        "VRC.SDKBase"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "VRC_SDK_VRCSDK3"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.vrchat.avatars",
+            "expression": "3.3.0",
+            "define": "VRC_SDK_VRCSDK3"
+        }
+    ]
+}

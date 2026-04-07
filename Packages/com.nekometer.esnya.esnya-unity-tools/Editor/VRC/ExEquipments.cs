@@ -1,4 +1,4 @@
-#if VRC_SDK_VRCSDK3 && !UDON
+#if VRC_SDK_VRCSDK3
 namespace EsnyaFactory {
   using System.Collections.Generic;
   using System.Linq;
