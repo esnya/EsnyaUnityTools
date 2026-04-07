@@ -233,6 +233,10 @@ namespace EsnyaFactory {
 
     private void SetupParameters() {
       if (expressionParameters.FindParameter(item.name) != null) return;
+      var newParameterCost = VRCExpressionParameters.TypeCost(VRCExpressionParameters.ValueType.Int);
+      if (expressionParameters.CalcTotalCost() + newParameterCost > VRCExpressionParameters.MAX_PARAMETER_COST) {
+        throw new System.Exception($"Expression parameters are full (cost: {expressionParameters.CalcTotalCost()}/{VRCExpressionParameters.MAX_PARAMETER_COST}). Please free up at least {newParameterCost} bits.");
+      }
       var emptyEntry = expressionParameters.parameters.Select((p, i) => new { p, i }).FirstOrDefault(a => string.IsNullOrEmpty(a.p.name));
       var newParameter = new VRCExpressionParameters.Parameter() {
         name = item.name,
@@ -274,35 +278,40 @@ namespace EsnyaFactory {
     }
 
     private void Setup() {
-      uint totalSetps = 7;
+      uint totalSteps = 7;
       uint step = 0;
 
-      EditorUtility.DisplayProgressBar("ExEquipments", "Setup in progress", (float)(step++) / totalSetps);
+      try {
+        EditorUtility.DisplayProgressBar("ExEquipments", "Setup in progress", (float)(step++) / totalSteps);
 
-      EditorUtility.DisplayProgressBar("ExEquipments", "ParentConstraint", (float)(step++) / totalSetps);
-      var parentConstraint = SetupParentConstraint();
+        EditorUtility.DisplayProgressBar("ExEquipments", "ParentConstraint", (float)(step++) / totalSteps);
+        var parentConstraint = SetupParentConstraint();
 
-      EditorUtility.DisplayProgressBar("ExEquipments", "Animation clips", (float)(step++) / totalSetps);
-      var clips = SetupClips();
+        EditorUtility.DisplayProgressBar("ExEquipments", "Animation clips", (float)(step++) / totalSteps);
+        var clips = SetupClips();
 
-      EditorUtility.DisplayProgressBar("ExEquipments", "Animation controller layer", (float)(step++) / totalSetps);
-      var layer = SetupLayer(clips);
+        EditorUtility.DisplayProgressBar("ExEquipments", "Animation controller layer", (float)(step++) / totalSteps);
+        var layer = SetupLayer(clips);
 
-      EditorUtility.DisplayProgressBar("ExEquipments", "Extra: Drop", (float)(step++) / totalSetps);
-      if (drop) {
-        SetupDrop(parentConstraint, layer);
+        EditorUtility.DisplayProgressBar("ExEquipments", "Extra: Drop", (float)(step++) / totalSteps);
+        if (drop) {
+          SetupDrop(parentConstraint, layer);
+        }
+
+        EditorUtility.DisplayProgressBar("ExEquipments", "Expression parameters", (float)(step++) / totalSteps);
+        SetupParameters();
+
+        EditorUtility.DisplayProgressBar("ExEquipments", "Expressions menu", (float)(step++) / totalSteps);
+        SetupMenu();
+
+        EditorUtility.DisplayProgressBar("ExEquipments", "Finalize", (float)(step++) / totalSteps);
+        AssetDatabase.Refresh();
+      } catch (System.Exception e) {
+        Debug.LogError($"[ExEquipments] Setup failed: {e.Message}\n{e.StackTrace}");
+        EditorUtility.DisplayDialog("ExEquipments", $"Setup failed:\n{e.Message}", "OK");
+      } finally {
+        EditorUtility.ClearProgressBar();
       }
-
-
-      EditorUtility.DisplayProgressBar("ExEquipments", "Expression parameters", (float)(step++) / totalSetps);
-      SetupParameters();
-
-      EditorUtility.DisplayProgressBar("ExEquipments", "Expressions menu", (float)(step++) / totalSetps);
-      SetupMenu();
-
-      EditorUtility.DisplayProgressBar("ExEquipments", "Finalize", (float)(step++) / totalSetps);
-      AssetDatabase.Refresh();
-      EditorUtility.ClearProgressBar();
     }
   }
 }
