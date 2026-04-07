@@ -233,20 +233,20 @@ namespace EsnyaFactory {
 
     private void SetupParameters() {
       if (expressionParameters.FindParameter(item.name) != null) return;
-      var newParameterCost = VRCExpressionParameters.TypeCost(VRCExpressionParameters.ValueType.Int);
-      var currentParameterCost = expressionParameters.CalcTotalCost();
-      var requiredFreeBits = currentParameterCost + newParameterCost - VRCExpressionParameters.MAX_PARAMETER_COST;
-      if (requiredFreeBits > 0) {
-        throw new System.Exception($"Insufficient expression parameter cost budget to add Int parameter '{item.name}' (current: {currentParameterCost}, added: {newParameterCost}, projected: {currentParameterCost + newParameterCost}/{VRCExpressionParameters.MAX_PARAMETER_COST}). Please free up at least {requiredFreeBits} bits.");
-      }
-      var emptyEntry = expressionParameters.parameters.Select((p, i) => new { p, i }).FirstOrDefault(a => string.IsNullOrEmpty(a.p.name));
       var newParameter = new VRCExpressionParameters.Parameter() {
         name = item.name,
         valueType = VRCExpressionParameters.ValueType.Int,
       };
+      var emptyEntry = expressionParameters.parameters.Select((p, i) => new { p, i }).FirstOrDefault(a => string.IsNullOrEmpty(a.p.name));
       if (emptyEntry != null) {
         expressionParameters.parameters[emptyEntry.i] = newParameter;
       } else {
+        var newParameterCost = VRCExpressionParameters.TypeCost(VRCExpressionParameters.ValueType.Int);
+        var currentParameterCost = expressionParameters.CalcTotalCost();
+        var requiredFreeBits = currentParameterCost + newParameterCost - VRCExpressionParameters.MAX_PARAMETER_COST;
+        if (requiredFreeBits > 0) {
+          throw new System.Exception($"Insufficient expression parameter cost budget to add Int parameter '{item.name}' (current: {currentParameterCost}, added: {newParameterCost}, projected: {currentParameterCost + newParameterCost}/{VRCExpressionParameters.MAX_PARAMETER_COST}). Please free up at least {requiredFreeBits} bits.");
+        }
         expressionParameters.parameters = expressionParameters.parameters.Append(newParameter).ToArray();
       }
       EditorUtility.SetDirty(expressionParameters);
@@ -280,7 +280,7 @@ namespace EsnyaFactory {
     }
 
     private void Setup() {
-      uint totalSteps = 8;
+      uint totalSteps = 7;
       uint step = 0;
 
       try {
