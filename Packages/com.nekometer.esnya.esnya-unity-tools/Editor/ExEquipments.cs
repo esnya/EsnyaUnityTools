@@ -235,8 +235,9 @@ namespace EsnyaFactory {
       if (expressionParameters.FindParameter(item.name) != null) return;
       var newParameterCost = VRCExpressionParameters.TypeCost(VRCExpressionParameters.ValueType.Int);
       var currentParameterCost = expressionParameters.CalcTotalCost();
-      if (currentParameterCost + newParameterCost > VRCExpressionParameters.MAX_PARAMETER_COST) {
-        throw new System.Exception($"Expression parameters are full (cost: {currentParameterCost}/{VRCExpressionParameters.MAX_PARAMETER_COST}). Please free up at least {newParameterCost} bits.");
+      var requiredFreeBits = currentParameterCost + newParameterCost - VRCExpressionParameters.MAX_PARAMETER_COST;
+      if (requiredFreeBits > 0) {
+        throw new System.Exception($"Expression parameters are full (cost: {currentParameterCost}/{VRCExpressionParameters.MAX_PARAMETER_COST}). Please free up at least {requiredFreeBits} bits.");
       }
       var emptyEntry = expressionParameters.parameters.Select((p, i) => new { p, i }).FirstOrDefault(a => string.IsNullOrEmpty(a.p.name));
       var newParameter = new VRCExpressionParameters.Parameter() {
