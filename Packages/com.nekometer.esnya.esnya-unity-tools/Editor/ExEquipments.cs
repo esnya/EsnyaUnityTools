@@ -280,7 +280,7 @@ namespace EsnyaFactory {
     }
 
     private void Setup() {
-      uint totalSteps = 7;
+      uint totalSteps = 8;
       uint step = 0;
 
       try {
