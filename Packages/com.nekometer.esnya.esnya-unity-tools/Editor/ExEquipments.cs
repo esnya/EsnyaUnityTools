@@ -233,11 +233,16 @@ namespace EsnyaFactory {
 
     private void SetupParameters() {
       if (expressionParameters.FindParameter(item.name) != null) return;
-      var emptyIndex = expressionParameters.parameters.Select((p, i) => new { p, i }).First(a => string.IsNullOrEmpty(a.p.name)).i;
-      expressionParameters.parameters[emptyIndex] = new VRCExpressionParameters.Parameter() {
+      var emptyEntry = expressionParameters.parameters.Select((p, i) => new { p, i }).FirstOrDefault(a => string.IsNullOrEmpty(a.p.name));
+      var newParameter = new VRCExpressionParameters.Parameter() {
         name = item.name,
         valueType = VRCExpressionParameters.ValueType.Int,
       };
+      if (emptyEntry != null) {
+        expressionParameters.parameters[emptyEntry.i] = newParameter;
+      } else {
+        expressionParameters.parameters = expressionParameters.parameters.Append(newParameter).ToArray();
+      }
       EditorUtility.SetDirty(expressionParameters);
       AssetDatabase.SaveAssets();
     }
