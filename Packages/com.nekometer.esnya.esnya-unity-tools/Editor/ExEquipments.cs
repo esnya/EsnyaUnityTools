@@ -237,7 +237,7 @@ namespace EsnyaFactory {
       var currentParameterCost = expressionParameters.CalcTotalCost();
       var requiredFreeBits = currentParameterCost + newParameterCost - VRCExpressionParameters.MAX_PARAMETER_COST;
       if (requiredFreeBits > 0) {
-        throw new System.Exception($"Expression parameters are full (cost: {currentParameterCost}/{VRCExpressionParameters.MAX_PARAMETER_COST}). Please free up at least {requiredFreeBits} bits.");
+        throw new System.Exception($"Insufficient expression parameter cost budget to add Int parameter '{item.name}' (current: {currentParameterCost}, added: {newParameterCost}, projected: {currentParameterCost + newParameterCost}/{VRCExpressionParameters.MAX_PARAMETER_COST}). Please free up at least {requiredFreeBits} bits.");
       }
       var emptyEntry = expressionParameters.parameters.Select((p, i) => new { p, i }).FirstOrDefault(a => string.IsNullOrEmpty(a.p.name));
       var newParameter = new VRCExpressionParameters.Parameter() {
@@ -313,6 +313,7 @@ namespace EsnyaFactory {
       } catch (System.Exception e) {
         Debug.LogError("[ExEquipments] Setup failed.");
         Debug.LogException(e);
+        EditorUtility.ClearProgressBar();
         EditorUtility.DisplayDialog("ExEquipments", $"Setup failed:\n{e.Message}", "OK");
       } finally {
         EditorUtility.ClearProgressBar();
