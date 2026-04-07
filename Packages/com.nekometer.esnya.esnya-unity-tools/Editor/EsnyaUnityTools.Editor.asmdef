@@ -5,7 +5,9 @@
         "Unity.Postprocessing.Editor",
         "EsbyaUnityTools.Scripts",
         "Unity.TextMeshPro",
-        "Unity.TextMeshPro.Editor"
+        "Unity.TextMeshPro.Editor",
+        "VRC.SDK3.Avatars",
+        "VRC.SDKBase"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
@@ -16,5 +18,12 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.vrchat.avatars",
+            "expression": "",
+            "define": "VRC_SDK_VRCSDK3"
+        }
+    ]
 }
