@@ -11,5 +11,11 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [
+        {
+            "name": "com.vrchat.avatars",
+            "expression": "3.10.2",
+            "define": "ESNYA_VRC_AVATARS"
+        }
+    ]
 }
