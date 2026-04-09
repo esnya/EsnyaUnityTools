@@ -1,4 +1,4 @@
-#if VRC_SDK_VRCSDK3 && !UDON
+#if ESNYA_VRC_AVATARS
 namespace EsnyaFactory {
     using System.Linq;
     using UnityEditor;
