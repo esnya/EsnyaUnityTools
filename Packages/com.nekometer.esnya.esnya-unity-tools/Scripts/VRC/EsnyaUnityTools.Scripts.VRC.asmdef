@@ -13,13 +13,13 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [
-        "VRC_SDK_VRCSDK3"
+        "ESNYA_VRC_AVATARS"
     ],
     "versionDefines": [
         {
             "name": "com.vrchat.avatars",
             "expression": "3.10.2",
-            "define": "VRC_SDK_VRCSDK3"
+            "define": "ESNYA_VRC_AVATARS"
         }
     ]
 }
