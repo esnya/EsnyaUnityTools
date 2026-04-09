@@ -15,7 +15,7 @@
   "dependencies": {
   },
   "vpmDependencies": {
-    "com.vrchat.avatars": ">=3.10.2"
+    "com.vrchat.avatars": ">=3.3.0"
   },
   "legacyFolders": {
     "Assets\\EsnyaUnityTools": ""
